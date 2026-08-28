@@ -1,0 +1,68 @@
+[
+  {
+    "scheme_id": "NSFDC_MFS",
+    "scheme_name": "NSFDC Micro Credit Finance (MCF)",
+    "target_group": "Scheduled Castes (SC)",
+    "max_cost": 150000,
+    "promoter_margin_pct": 10,
+    "loan_share_pct": 90,
+    "interest_rate_pa": 5.0,
+    "moratorium_months": 3,
+    "repayment_period_months": 36,
+    "documents_required": [
+      "Aadhaar Card",
+      "Caste Certificate",
+      "Income Certificate (under ₹3.0 Lakh)",
+      "Bank Account Details"
+    ]
+  },
+  {
+    "scheme_id": "NBCFDC_MSY",
+    "scheme_name": "NBCFDC Mahila Samriddhi Yojana",
+    "target_group": "Other Backward Classes (OBC) - Women",
+    "max_cost": 140000,
+    "promoter_margin_pct": 5,
+    "loan_share_pct": 95,
+    "interest_rate_pa": 4.0,
+    "moratorium_months": 3,
+    "repayment_period_months": 48,
+    "documents_required": [
+      "Aadhaar Card",
+      "OBC Category Certificate",
+      "Local Residence Proof",
+      "Self-Help Group (SHG) / Individual Form"
+    ]
+  },
+  {
+    "scheme_id": "PMAJAY_INCOME",
+    "scheme_name": "PM-AJAY Grant-in-Aid for Livelihood",
+    "target_group": "Scheduled Castes / BPL",
+    "max_cost": 50000,
+    "promoter_margin_pct": 0,
+    "loan_share_pct": 100,
+    "interest_rate_pa": 0.0,
+    "moratorium_months": 0,
+    "repayment_period_months": 0,
+    "documents_required": [
+      "Aadhaar Card",
+      "BPL / Ration Card",
+      "Caste Certificate"
+    ]
+  },
+  {
+    "scheme_id": "PMMY_SHISHU",
+    "scheme_name": "Pradhan Mantri Mudra Yojana (Shishu)",
+    "target_group": "General / All Micro-Entrepreneurs",
+    "max_cost": 50000,
+    "promoter_margin_pct": 0,
+    "loan_share_pct": 100,
+    "interest_rate_pa": 8.5,
+    "moratorium_months": 6,
+    "repayment_period_months": 36,
+    "documents_required": [
+      "Aadhaar Card",
+      "PAN Card",
+      "Business Address Proof"
+    ]
+  }
+]
