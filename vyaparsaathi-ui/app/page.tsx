@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import axios from "axios";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 
@@ -58,6 +58,9 @@ type Translation = {
   normalAdvice: string;
   cityPulse: string;
   noNews: string;
+  offlineLabel: string;
+  offlineStatus: string;
+  cachedNotice: string;
   category: string;
   fastFood: string;
   placesFound: string;
@@ -111,6 +114,9 @@ const copy: Record<Language, Translation> = {
     normalAdvice: "No rain or heat alert in the next few hours.",
     cityPulse: "City Pulse",
     noNews: "No verified local headlines are loaded for this city yet.",
+    offlineLabel: "Offline",
+    offlineStatus: "Offline · saved plans stay on this device; new advice and calculations need a connection.",
+    cachedNotice: "Showing cached sample data; it may be out of date. Refresh when connected.",
     category: "Business category",
     fastFood: "Fast food",
     placesFound: "Similar places found",
@@ -162,6 +168,9 @@ const copy: Record<Language, Translation> = {
     normalAdvice: "अगले कुछ घंटों के लिए बारिश या गर्मी की चेतावनी नहीं है।",
     cityPulse: "शहर की खबरें",
     noNews: "इस शहर की कोई सत्यापित स्थानीय खबर अभी उपलब्ध नहीं है।",
+    offlineLabel: "ऑफ़लाइन",
+    offlineStatus: "ऑफ़लाइन · सेव योजना इसी डिवाइस पर है; नई सलाह और गणना के लिए इंटरनेट चाहिए।",
+    cachedNotice: "सेव किया नमूना डेटा पुराना हो सकता है। कनेक्शन मिलने पर अपडेट करें।",
     category: "व्यवसाय की श्रेणी",
     fastFood: "फास्ट फूड",
     placesFound: "मिले-जुले व्यवसाय",
@@ -213,6 +222,9 @@ const copy: Record<Language, Translation> = {
     normalAdvice: "पुढील काही तासांसाठी पाऊस किंवा उष्णतेचा इशारा नाही.",
     cityPulse: "शहरातील घडामोडी",
     noNews: "या शहरासाठी सत्यापित स्थानिक बातम्या अजून उपलब्ध नाहीत.",
+    offlineLabel: "ऑफलाइन",
+    offlineStatus: "ऑफलाइन · जतन केलेली योजना या डिव्हाइसवर आहे; नवीन सल्ला व गणनेसाठी इंटरनेट आवश्यक.",
+    cachedNotice: "जतन केलेला नमुना डेटा जुना असू शकतो. इंटरनेट जोडल्यावर अपडेट करा.",
     category: "व्यवसायाचा प्रकार",
     fastFood: "फास्ट फूड",
     placesFound: "सापडलेली समान दुकाने",
@@ -264,6 +276,9 @@ const copy: Record<Language, Translation> = {
     normalAdvice: "આગામી થોડા કલાકોમાં વરસાદ કે ગરમીની ચેતવણી નથી.",
     cityPulse: "શહેરની ખબર",
     noNews: "આ શહેર માટે ચકાસેલી સ્થાનિક ખબર હજી ઉપલબ્ધ નથી.",
+    offlineLabel: "ઓફલાઇન",
+    offlineStatus: "ઓફલાઇન · સાચવેલી યોજના આ ઉપકરણ પર છે; નવી સલાહ અને ગણતરી માટે ઇન્ટરનેટ જરૂરી છે.",
+    cachedNotice: "સાચવેલો નમૂનાનો ડેટા જૂનો હોઈ શકે છે. જોડાણ મળે ત્યારે અપડેટ કરો.",
     category: "વ્યવસાયની શ્રેણી",
     fastFood: "ફાસ્ટ ફૂડ",
     placesFound: "મળેલી સમાન દુકાનો",
@@ -315,6 +330,9 @@ const copy: Record<Language, Translation> = {
     normalAdvice: "আগামী কয়েক ঘণ্টায় বৃষ্টি বা গরমের সতর্কতা নেই।",
     cityPulse: "শহরের খবর",
     noNews: "এই শহরের যাচাই করা স্থানীয় খবর এখনও যোগ করা হয়নি।",
+    offlineLabel: "অফলাইন",
+    offlineStatus: "অফলাইন · সংরক্ষিত পরিকল্পনা এই ডিভাইসে আছে; নতুন পরামর্শ ও হিসাবের জন্য ইন্টারনেট লাগবে।",
+    cachedNotice: "সংরক্ষিত নমুনা তথ্য পুরোনো হতে পারে। সংযোগ পেলে আপডেট করুন।",
     category: "ব্যবসার ধরন",
     fastFood: "ফাস্ট ফুড",
     placesFound: "পাওয়া একই ধরনের দোকান",
@@ -515,6 +533,33 @@ type BusinessTemplate = {
   unit_cost_is_sample: boolean;
   recipe?: RecipeIngredient[];
 };
+
+function isBusinessTemplates(value: unknown): value is BusinessTemplate[] {
+  if (!Array.isArray(value)) return false;
+  return value.every((item) => {
+    if (typeof item !== "object" || item === null) return false;
+    const template = item as Record<string, unknown>;
+    return typeof template.id === "string" &&
+      typeof template.name === "string" &&
+      (template.model === "mobile" || template.model === "fixed" || template.model === "home") &&
+      typeof template.selling_price === "number" &&
+      typeof template.startup_cost === "number" &&
+      (typeof template.unit_cost === "number" || template.unit_cost === null) &&
+      typeof template.unit_cost_is_sample === "boolean" &&
+      (template.recipe === undefined || Array.isArray(template.recipe));
+  });
+}
+
+function findProfileTemplate(
+  templates: BusinessTemplate[],
+  businessId: string | null,
+  businessName: string | null,
+) {
+  const normalizedName = businessName?.toLowerCase();
+  return templates.find((template) =>
+    template.id === businessId || template.name.toLowerCase() === normalizedName,
+  );
+}
 
 type MoneyInputs = {
   businessId: string;
@@ -867,6 +912,17 @@ type CityMarketData = {
   confidence: string;
 };
 
+function isCityMarketData(value: unknown, city: City): value is CityMarketData {
+  if (typeof value !== "object" || value === null) return false;
+  const data = value as Record<string, unknown>;
+  return data.city === city &&
+    Array.isArray(data.areas) &&
+    typeof data.map_available === "boolean" &&
+    Array.isArray(data.market_samples) &&
+    Array.isArray(data.rush_samples) &&
+    typeof data.confidence === "string";
+}
+
 type RushResult = {
   hourly_index: Record<string, number>;
   best_start_hour: number;
@@ -887,6 +943,23 @@ type WeatherResult = {
 
 const storageKey = "vyaparsaathi-city";
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
+
+function subscribeToNetworkStatus(onChange: () => void) {
+  window.addEventListener("online", onChange);
+  window.addEventListener("offline", onChange);
+  return () => {
+    window.removeEventListener("online", onChange);
+    window.removeEventListener("offline", onChange);
+  };
+}
+
+function getNetworkStatus() {
+  return navigator.onLine;
+}
+
+function getServerNetworkStatus() {
+  return true;
+}
 
 function createInitialState(language: Language): VyaparState {
   return {
@@ -953,6 +1026,7 @@ export default function VyaparSaathiCityApp() {
     resetTranscript,
   } = useSpeechRecognition();
   const [marketData, setMarketData] = useState<CityMarketData | null>(null);
+  const [marketDataStale, setMarketDataStale] = useState(false);
   const [marketLoading, setMarketLoading] = useState(false);
   const [marketError, setMarketError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("fast_food");
@@ -962,6 +1036,7 @@ export default function VyaparSaathiCityApp() {
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState("");
   const [businessTemplates, setBusinessTemplates] = useState<BusinessTemplate[]>([]);
+  const [businessTemplatesStale, setBusinessTemplatesStale] = useState(false);
   const [financeInputs, setFinanceInputs] = useState<MoneyInputs>({
     businessId: "",
     sellingPrice: "",
@@ -1012,6 +1087,11 @@ export default function VyaparSaathiCityApp() {
   const t = copy[language];
   const money = moneyCopy[language];
   const ground = groundCopy[language];
+  const isOnline = useSyncExternalStore(
+    subscribeToNetworkStatus,
+    getNetworkStatus,
+    getServerNetworkStatus,
+  );
   const wantsLoan = vyaparState.user_profile.loan_needed;
 
   useEffect(() => {
@@ -1137,32 +1217,54 @@ export default function VyaparSaathiCityApp() {
   ]);
 
   useEffect(() => {
-    if (!isHydrated || activeScreen !== "money" || businessTemplates.length > 0) return;
+    if (!isHydrated || activeScreen !== "money" ||
+      (businessTemplates.length > 0 && (!businessTemplatesStale || !isOnline))) return;
     let active = true;
+    const cacheKey = `${storageKey}-business-templates`;
+    const applyTemplates = (templates: BusinessTemplate[], stale: boolean) => {
+      setBusinessTemplates(templates);
+      setBusinessTemplatesStale(stale);
+      setMoneyError("");
+      const matchingTemplate = findProfileTemplate(
+        templates,
+        vyaparState.business_context.category,
+        vyaparState.business_context.business_name,
+      );
+      if (matchingTemplate && !financeInputs.businessId) {
+        setFinanceInputs((previous) => ({
+          ...previous,
+          businessId: matchingTemplate.id,
+          sellingPrice: previous.sellingPrice || String(matchingTemplate.selling_price),
+          unitCost: previous.unitCost || (matchingTemplate.unit_cost === null ? "" : String(matchingTemplate.unit_cost)),
+          startupCost: previous.startupCost || String(matchingTemplate.startup_cost),
+          fixedCosts: previous.fixedCosts || (matchingTemplate.fixed_monthly_cost === undefined ? "" : String(matchingTemplate.fixed_monthly_cost)),
+          availableCapital: previous.availableCapital || String(vyaparState.user_profile.available_capital ?? ""),
+        }));
+      }
+    };
     axios.get<{ business_templates: BusinessTemplate[] }>(`${apiBaseUrl}/api/city/business-templates`)
       .then((response) => {
         if (!active) return;
         const templates = response.data.business_templates;
-        setBusinessTemplates(templates);
-        const businessName = vyaparState.business_context.business_name?.toLowerCase();
-        const matchingTemplate = templates.find((template) =>
-          template.id === vyaparState.business_context.category ||
-          template.name.toLowerCase() === businessName,
-        );
-        if (matchingTemplate && !financeInputs.businessId) {
-          setFinanceInputs((previous) => ({
-            ...previous,
-            businessId: matchingTemplate.id,
-            sellingPrice: previous.sellingPrice || String(matchingTemplate.selling_price),
-            unitCost: previous.unitCost || (matchingTemplate.unit_cost === null ? "" : String(matchingTemplate.unit_cost)),
-            startupCost: previous.startupCost || String(matchingTemplate.startup_cost),
-            fixedCosts: previous.fixedCosts || (matchingTemplate.fixed_monthly_cost === undefined ? "" : String(matchingTemplate.fixed_monthly_cost)),
-            availableCapital: previous.availableCapital || String(vyaparState.user_profile.available_capital ?? ""),
-          }));
-        }
+        if (!isBusinessTemplates(templates)) throw new Error("Business templates response is invalid");
+        window.localStorage.setItem(cacheKey, JSON.stringify(templates));
+        applyTemplates(templates, false);
       })
       .catch(() => {
-        if (active) setMoneyError(money.error);
+        if (!active) return;
+        const cached = window.localStorage.getItem(cacheKey);
+        if (!cached) {
+          setMoneyError(money.error);
+          return;
+        }
+        try {
+          const templates: unknown = JSON.parse(cached);
+          if (!isBusinessTemplates(templates)) throw new Error("Cached business templates are invalid");
+          applyTemplates(templates, true);
+        } catch {
+          window.localStorage.removeItem(cacheKey);
+          setMoneyError(money.error);
+        }
       });
     return () => {
       active = false;
@@ -1170,8 +1272,10 @@ export default function VyaparSaathiCityApp() {
   }, [
     activeScreen,
     businessTemplates.length,
+    businessTemplatesStale,
     financeInputs.businessId,
     isHydrated,
+    isOnline,
     money.error,
     vyaparState.business_context.business_name,
     vyaparState.business_context.category,
@@ -1181,18 +1285,39 @@ export default function VyaparSaathiCityApp() {
   useEffect(() => {
     if (activeScreen !== "market" && activeScreen !== "time") return;
     let active = true;
+    const city = vyaparState.user_profile.city;
+    const cacheKey = `${storageKey}-market-${city}`;
     setMarketLoading(true);
     setMarketError("");
     setMarketData(null);
+    setMarketDataStale(false);
     setRushResult(null);
     setRushError("");
 
     axios.get<CityMarketData>(`${apiBaseUrl}/api/city/market-data`, {
-      params: { city: vyaparState.user_profile.city },
+      params: { city },
     }).then((response) => {
-      if (active) setMarketData(response.data);
+      if (!active) return;
+      if (!isCityMarketData(response.data, city)) throw new Error("Market data response is invalid");
+      window.localStorage.setItem(cacheKey, JSON.stringify(response.data));
+      setMarketData(response.data);
+      setMarketDataStale(false);
     }).catch(() => {
-      if (active) setMarketError(t.connection);
+      if (!active) return;
+      const cached = window.localStorage.getItem(cacheKey);
+      if (!cached) {
+        setMarketError(t.connection);
+        return;
+      }
+      try {
+        const data: unknown = JSON.parse(cached);
+        if (!isCityMarketData(data, city)) throw new Error("Cached market data is invalid");
+        setMarketData(data);
+        setMarketDataStale(true);
+      } catch {
+        window.localStorage.removeItem(cacheKey);
+        setMarketError(t.connection);
+      }
     }).finally(() => {
       if (active) setMarketLoading(false);
     });
@@ -1200,7 +1325,7 @@ export default function VyaparSaathiCityApp() {
     return () => {
       active = false;
     };
-  }, [activeScreen, t.connection, vyaparState.user_profile.city]);
+  }, [activeScreen, isOnline, t.connection, vyaparState.user_profile.city]);
 
   useEffect(() => {
     const sample = marketData?.rush_samples[0];
@@ -1728,7 +1853,10 @@ export default function VyaparSaathiCityApp() {
     <header className="fixed top-0 left-0 right-0 z-50 mx-auto flex h-16 max-w-md items-center justify-between border-b border-outline-variant bg-surface px-4">
       <div className="flex items-center gap-3">
         <span className="material-symbols-outlined text-primary" aria-hidden="true">storefront</span>
-        <span className="font-bold">{title}</span>
+        <div className="min-w-0">
+          <span className="font-bold">{title}</span>
+          {!isOnline && <span className="ml-2 rounded-full bg-amber-100 px-2 py-1 text-[9px] font-bold text-amber-900">{t.offlineLabel}</span>}
+        </div>
       </div>
       <div className="relative">
         <button
@@ -1788,6 +1916,7 @@ export default function VyaparSaathiCityApp() {
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-primary">VyaparSaathi City</p>
           <h1 className="font-sans text-3xl font-extrabold leading-tight">{t.welcome}</h1>
           <p className="mt-3 text-outline">{t.welcomeDescription}</p>
+          {!isOnline && <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-900">{t.offlineStatus}</p>}
 
           <label htmlFor="city-select" className="mb-2 mt-7 block text-sm font-bold">{t.chooseCity}</label>
           <select
@@ -1907,6 +2036,8 @@ export default function VyaparSaathiCityApp() {
           <TopAppBar title={t.marketTitle} />
           <h1 className="text-2xl font-bold">{t.marketTitle} · {vyaparState.user_profile.city}</h1>
           <p className="mt-2 text-sm text-outline">{t.marketMessage}</p>
+          {!isOnline && <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-900">{t.offlineStatus}</p>}
+          {marketDataStale && <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-900">{t.cachedNotice}</p>}
           <label htmlFor="market-category" className="mb-2 mt-5 block text-sm font-bold">{t.category}</label>
           <select
             id="market-category"
@@ -2169,6 +2300,8 @@ export default function VyaparSaathiCityApp() {
           <TopAppBar title={money.title} />
           <h1 className="text-2xl font-bold">{money.title}</h1>
           <p className="mt-2 text-sm text-outline">{t.sampleNotice}</p>
+          {!isOnline && <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-900">{t.offlineStatus}</p>}
+          {businessTemplatesStale && <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-900">{t.cachedNotice}</p>}
           {moneyError && <p className="mt-3 rounded-xl bg-rose-50 p-3 text-sm text-rose-800" role="alert">{moneyError}</p>}
 
           <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
@@ -2447,6 +2580,7 @@ export default function VyaparSaathiCityApp() {
           <section className="mt-8 rounded-2xl border border-outline-variant/50 bg-white p-5 shadow-sm">
             <h1 className="text-xl font-bold">{t.planTitle}</h1>
             <p className="mt-3 text-sm leading-relaxed text-outline">{t.planMessage}</p>
+            {!isOnline && <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-900">{t.offlineStatus}</p>}
             <dl className="mt-5 space-y-3 text-sm">
               <div className="flex justify-between gap-3">
                 <dt>{t.city}</dt><dd className="font-semibold">{vyaparState.user_profile.city}</dd>
