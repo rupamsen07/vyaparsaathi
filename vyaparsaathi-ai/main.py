@@ -16,7 +16,9 @@ from app.core.city_planner import (
     calculate_market_gap,
     calculate_opportunity_score,
     calculate_unit_cost,
+    estimate_rent_burden,
     estimate_daily_sales,
+    evaluate_pilot,
     find_best_sales_window,
     weather_advice,
 )
@@ -68,6 +70,18 @@ class FootfallForecastRequest(BaseModel):
     minutes_counted: float = Field(gt=0)
     selling_hours: float = Field(ge=0)
     buying_rate: float = Field(default=0.015, ge=0, le=1)
+
+class RentBurdenRequest(BaseModel):
+    monthly_rent: float = Field(ge=0)
+    estimated_daily_units: float = Field(ge=0)
+    selling_price: float = Field(ge=0)
+
+class PilotEvaluationRequest(BaseModel):
+    sales_by_day: list[float] = Field(min_length=1, max_length=7)
+    forecast_units_per_day: float = Field(gt=0)
+    selling_price: float | None = Field(default=None, ge=0)
+    unit_cost: float | None = Field(default=None, ge=0)
+    daily_expenses: list[float] | None = Field(default=None, max_length=7)
 
 class SchemeMatcherRequest(BaseModel):
     business_model: Literal["mobile", "fixed", "home"]
@@ -170,6 +184,30 @@ async def city_footfall_forecast(req: FootfallForecastRequest):
             req.minutes_counted,
             req.selling_hours,
             req.buying_rate,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+@app.post("/api/city/rent-burden")
+async def city_rent_burden(req: RentBurdenRequest):
+    try:
+        return estimate_rent_burden(
+            req.monthly_rent,
+            req.estimated_daily_units,
+            req.selling_price,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+@app.post("/api/city/pilot")
+async def city_pilot_evaluation(req: PilotEvaluationRequest):
+    try:
+        return evaluate_pilot(
+            req.sales_by_day,
+            req.forecast_units_per_day,
+            selling_price=req.selling_price,
+            unit_cost=req.unit_cost,
+            daily_expenses=req.daily_expenses,
         )
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error

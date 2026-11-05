@@ -8,6 +8,7 @@ from app.core.city_planner import (
     calculate_opportunity_score,
     calculate_unit_cost,
     estimate_daily_sales,
+    estimate_rent_burden,
     evaluate_pilot,
     find_best_sales_window,
     label_data_confidence,
@@ -96,6 +97,29 @@ class CityPlannerTests(unittest.TestCase):
         self.assertEqual(forecast["estimated_units_per_day"], 50.22)
         self.assertEqual(pilot["forecast_ratio"], 0.98)
         self.assertEqual(pilot["verdict"], "slightly below forecast")
+
+    def test_ground_truth_rent_share_has_no_zero_sales_division(self):
+        rent = estimate_rent_burden(18000, 45, 60)
+        no_sales = estimate_rent_burden(18000, 0, 60)
+
+        self.assertEqual(rent["estimated_monthly_sales"], 81000)
+        self.assertEqual(rent["rent_share_percent"], 22.22)
+        self.assertIsNone(no_sales["rent_share_percent"])
+
+    def test_pilot_ledger_summarizes_revenue_and_daily_expenses(self):
+        pilot = evaluate_pilot(
+            [10, 20],
+            15,
+            selling_price=60,
+            unit_cost=16.58,
+            daily_expenses=[100, 200],
+        )
+
+        self.assertEqual(pilot["gross_revenue"], 1800)
+        self.assertEqual(pilot["item_cost"], 497.4)
+        self.assertEqual(pilot["gross_profit"], 1302.6)
+        self.assertEqual(pilot["other_expenses"], 300)
+        self.assertEqual(pilot["net_profit"], 1002.6)
 
     def test_landed_cost_includes_transport_and_other_charges(self):
         self.assertEqual(calculate_landed_cost(520, 1, 20), 540)

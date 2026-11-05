@@ -534,6 +534,272 @@ type SupplierQuote = {
   landedCost: number;
 };
 
+type GroundInputs = {
+  peopleCount: string;
+  minutesCounted: string;
+  sellingHours: string;
+  buyingRate: string;
+  observedPrice: string;
+  monthlyRent: string;
+};
+
+type PilotInputs = {
+  forecast: string;
+  dailySales: string[];
+  dailyExpenses: string[];
+};
+
+type FootfallResult = {
+  people_per_hour: number;
+  estimated_units_per_day: number;
+  buying_rate: number;
+};
+
+type RentBurdenResult = {
+  monthly_rent: number;
+  estimated_monthly_sales: number;
+  rent_share_percent: number | null;
+};
+
+type PilotResult = {
+  days_recorded: number;
+  average_units_per_day: number;
+  forecast_units_per_day: number;
+  forecast_ratio: number;
+  verdict: "good sign" | "slightly below forecast" | "try another spot";
+  gross_revenue?: number;
+  item_cost?: number;
+  gross_profit?: number;
+  other_expenses?: number;
+  net_profit?: number;
+};
+
+type GroundPilotCopy = {
+  groundTitle: string;
+  groundNote: string;
+  peopleCount: string;
+  minutesCounted: string;
+  sellingHours: string;
+  buyingRate: string;
+  estimateFootfall: string;
+  peoplePerHour: string;
+  estimatedUnits: string;
+  priceTitle: string;
+  observedPrice: string;
+  addPrice: string;
+  checkedPrices: string;
+  priceMedian: string;
+  proposedPrice: string;
+  rent: string;
+  compareRent: string;
+  rentShare: string;
+  rentNote: string;
+  pilotTitle: string;
+  pilotNote: string;
+  targetUnits: string;
+  dayUnits: string;
+  evaluatePilot: string;
+  daysRecorded: string;
+  averageSales: string;
+  forecastRatio: string;
+  dailyExpense: string;
+  grossRevenue: string;
+  itemCost: string;
+  grossProfit: string;
+  netProfit: string;
+  goodSign: string;
+  belowForecast: string;
+  tryAnotherSpot: string;
+};
+
+const groundCopy: Record<Language, GroundPilotCopy> = {
+  English: {
+    groundTitle: "Ground Truth Kit",
+    groundNote: "Record what you observe locally. Footfall conversion is only a planning assumption; results are not a guarantee.",
+    peopleCount: "People who passed",
+    minutesCounted: "Minutes counted",
+    sellingHours: "Planned selling hours per day",
+    buyingRate: "Estimated buyers (%)",
+    estimateFootfall: "Estimate daily footfall sales",
+    peoplePerHour: "People per hour",
+    estimatedUnits: "Estimated units per day",
+    priceTitle: "Nearby price checks",
+    observedPrice: "Observed competitor price (₹)",
+    addPrice: "Add observed price",
+    checkedPrices: "Prices recorded",
+    priceMedian: "Observed median price",
+    proposedPrice: "Your planned price",
+    rent: "Monthly rent (₹)",
+    compareRent: "Compare rent with estimated sales",
+    rentShare: "Rent share of estimated monthly sales",
+    rentNote: "Comparison only, based on a 30-day estimate. There is no universal safe rent threshold.",
+    pilotTitle: "7-day Pilot Khata",
+    pilotNote: "Enter actual units sold and, when known, other daily expenses. Entries are saved on this device.",
+    targetUnits: "Forecast units per day",
+    dayUnits: "Units sold",
+    evaluatePilot: "Review pilot results",
+    daysRecorded: "Days recorded",
+    averageSales: "Average units sold per day",
+    forecastRatio: "Average versus forecast",
+    dailyExpense: "Other daily expenses (₹)",
+    grossRevenue: "Recorded-item revenue",
+    itemCost: "Recorded-item cost",
+    grossProfit: "Gross profit",
+    netProfit: "Profit after entered expenses",
+    goodSign: "Good sign against your forecast",
+    belowForecast: "Slightly below your forecast",
+    tryAnotherSpot: "Consider testing another spot",
+  },
+  Hindi: {
+    groundTitle: "जमीनी जानकारी किट",
+    groundNote: "स्थानीय निरीक्षण दर्ज करें। ग्राहक बनने का अनुपात केवल योजना का अनुमान है, नतीजे की गारंटी नहीं।",
+    peopleCount: "गुज़रने वाले लोग",
+    minutesCounted: "गिनने के मिनट",
+    sellingHours: "रोज़ बिक्री के घंटे",
+    buyingRate: "अनुमानित खरीदार (%)",
+    estimateFootfall: "दैनिक बिक्री का अनुमान",
+    peoplePerHour: "प्रति घंटे लोग",
+    estimatedUnits: "प्रतिदिन अनुमानित वस्तुएं",
+    priceTitle: "आसपास की कीमतें",
+    observedPrice: "दूसरी दुकान का देखा मूल्य (₹)",
+    addPrice: "देखा गया मूल्य जोड़ें",
+    checkedPrices: "दर्ज कीमतें",
+    priceMedian: "दर्ज कीमतों का मध्य मान",
+    proposedPrice: "आपका प्रस्तावित मूल्य",
+    rent: "मासिक किराया (₹)",
+    compareRent: "अनुमानित बिक्री से किराये की तुलना",
+    rentShare: "अनुमानित मासिक बिक्री में किराये का हिस्सा",
+    rentNote: "30 दिन के अनुमान पर तुलना। किराये की कोई एक सार्वभौमिक सुरक्षित सीमा नहीं है।",
+    pilotTitle: "7-दिन की पायलट खाता-बही",
+    pilotNote: "पूरे हुए दिनों की वास्तविक बिक्री और, ज्ञात हो तो, अन्य खर्च दर्ज करें। प्रविष्टियां इस डिवाइस पर सेव होंगी।",
+    targetUnits: "प्रतिदिन अनुमानित बिक्री",
+    dayUnits: "बिकी हुई वस्तुएं",
+    evaluatePilot: "पायलट नतीजे देखें",
+    daysRecorded: "दर्ज दिन",
+    averageSales: "प्रतिदिन औसत बिक्री",
+    forecastRatio: "औसत बनाम अनुमान",
+    dailyExpense: "अन्य दैनिक खर्च (₹)",
+    grossRevenue: "दर्ज वस्तुओं की बिक्री",
+    itemCost: "दर्ज वस्तुओं की लागत",
+    grossProfit: "सकल लाभ",
+    netProfit: "दर्ज खर्चों के बाद लाभ",
+    goodSign: "आपके अनुमान के मुकाबले अच्छा संकेत",
+    belowForecast: "आपके अनुमान से थोड़ा कम",
+    tryAnotherSpot: "दूसरी जगह पर परीक्षण करने पर विचार करें",
+  },
+  Marathi: {
+    groundTitle: "प्रत्यक्ष माहिती किट",
+    groundNote: "स्थानिक निरीक्षण नोंदवा. ग्राहक होण्याचे प्रमाण हा केवळ नियोजनाचा अंदाज आहे; हमी नाही.",
+    peopleCount: "जाणारे लोक",
+    minutesCounted: "मोजलेली मिनिटे",
+    sellingHours: "दररोजचे नियोजित विक्री तास",
+    buyingRate: "अंदाजे ग्राहक (%)",
+    estimateFootfall: "दैनिक विक्रीचा अंदाज",
+    peoplePerHour: "प्रति तास लोक",
+    estimatedUnits: "दररोज अंदाजे वस्तू",
+    priceTitle: "जवळपासच्या किंमती",
+    observedPrice: "दुसऱ्या दुकानात दिसलेली किंमत (₹)",
+    addPrice: "दिसलेली किंमत जोडा",
+    checkedPrices: "नोंदवलेल्या किंमती",
+    priceMedian: "नोंदवलेल्या किंमतींचा मध्यक",
+    proposedPrice: "तुमची नियोजित किंमत",
+    rent: "मासिक भाडे (₹)",
+    compareRent: "अंदाजे विक्रीशी भाड्याची तुलना",
+    rentShare: "अंदाजे मासिक विक्रीतील भाड्याचा हिस्सा",
+    rentNote: "30 दिवसांच्या अंदाजावर आधारित तुलना; भाड्याची एकच सार्वत्रिक सुरक्षित मर्यादा नाही.",
+    pilotTitle: "7-दिवसांची पायलट खातेवही",
+    pilotNote: "पूर्ण दिवसांची प्रत्यक्ष विक्री आणि माहीत असल्यास इतर खर्च नोंदवा. नोंदी या डिव्हाइसवर जतन होतील.",
+    targetUnits: "दररोजचा अंदाज",
+    dayUnits: "विकलेल्या वस्तू",
+    evaluatePilot: "पायलटचा आढावा घ्या",
+    daysRecorded: "नोंदवलेले दिवस",
+    averageSales: "दररोजची सरासरी विक्री",
+    forecastRatio: "सरासरी विरुद्ध अंदाज",
+    dailyExpense: "इतर दैनिक खर्च (₹)",
+    grossRevenue: "नोंदवलेल्या वस्तूंची विक्री",
+    itemCost: "नोंदवलेल्या वस्तूंचा खर्च",
+    grossProfit: "एकूण नफा",
+    netProfit: "नोंदवलेल्या खर्चानंतरचा नफा",
+    goodSign: "अंदाजाच्या तुलनेत चांगले चिन्ह",
+    belowForecast: "अंदाजापेक्षा थोडी कमी विक्री",
+    tryAnotherSpot: "दुसऱ्या जागेवर चाचणी करण्याचा विचार करा",
+  },
+  Gujarati: {
+    groundTitle: "જમીની માહિતી કિટ",
+    groundNote: "સ્થાનિક નિરીક્ષણ નોંધો. ખરીદી રૂપાંતર માત્ર આયોજનનો અંદાજ છે, પરિણામની ખાતરી નથી.",
+    peopleCount: "પસાર થતા લોકો",
+    minutesCounted: "ગણતરીના મિનિટ",
+    sellingHours: "દરરોજના આયોજન કરેલા વેચાણ કલાક",
+    buyingRate: "અંદાજિત ખરીદદારો (%)",
+    estimateFootfall: "દૈનિક વેચાણનો અંદાજ",
+    peoplePerHour: "દર કલાકે લોકો",
+    estimatedUnits: "દરરોજ અંદાજિત વસ્તુઓ",
+    priceTitle: "નજીકના ભાવની નોંધ",
+    observedPrice: "બીજા વેપારીનો જોયેલો ભાવ (₹)",
+    addPrice: "જોયેલો ભાવ ઉમેરો",
+    checkedPrices: "નોંધેલા ભાવ",
+    priceMedian: "નોંધેલા ભાવનો મધ્યક",
+    proposedPrice: "તમારો આયોજન કરેલો ભાવ",
+    rent: "માસિક ભાડું (₹)",
+    compareRent: "અંદાજિત વેચાણ સાથે ભાડાની તુલના",
+    rentShare: "અંદાજિત માસિક વેચાણમાં ભાડાનો હિસ્સો",
+    rentNote: "30 દિવસના અંદાજ પર તુલના; ભાડાની કોઈ એક સર્વમાન્ય સલામત મર્યાદા નથી.",
+    pilotTitle: "7-દિવસની પાયલોટ ખાતાવહી",
+    pilotNote: "પૂર્ણ થયેલા દિવસોનું વાસ્તવિક વેચાણ અને ખબર હોય તો અન્ય ખર્ચ નોંધો. નોંધો આ ઉપકરણ પર સાચવાશે.",
+    targetUnits: "દરરોજનો અંદાજ",
+    dayUnits: "વેચાયેલી વસ્તુઓ",
+    evaluatePilot: "પાયલોટનું મૂલ્યાંકન કરો",
+    daysRecorded: "નોંધેલા દિવસો",
+    averageSales: "દરરોજનું સરેરાશ વેચાણ",
+    forecastRatio: "સરેરાશ સામે અંદાજ",
+    dailyExpense: "અન્ય દૈનિક ખર્ચ (₹)",
+    grossRevenue: "નોંધેલી વસ્તુઓનું વેચાણ",
+    itemCost: "નોંધેલી વસ્તુઓનો ખર્ચ",
+    grossProfit: "કુલ નફો",
+    netProfit: "નોંધેલા ખર્ચ પછીનો નફો",
+    goodSign: "તમારા અંદાજની સામે સારો સંકેત",
+    belowForecast: "તમારા અંદાજ કરતાં થોડું ઓછું",
+    tryAnotherSpot: "બીજી જગ્યાએ અજમાવવાનું વિચારો",
+  },
+  Bengali: {
+    groundTitle: "মাঠপর্যায়ের তথ্য কিট",
+    groundNote: "স্থানীয় পর্যবেক্ষণ লিখুন। ক্রেতা হওয়ার হার পরিকল্পনার অনুমান, ফলাফলের নিশ্চয়তা নয়।",
+    peopleCount: "যাতায়াত করা মানুষ",
+    minutesCounted: "গণনার মিনিট",
+    sellingHours: "প্রতিদিন বিক্রির পরিকল্পিত ঘণ্টা",
+    buyingRate: "আনুমানিক ক্রেতা (%)",
+    estimateFootfall: "দৈনিক বিক্রির অনুমান",
+    peoplePerHour: "প্রতি ঘণ্টায় মানুষ",
+    estimatedUnits: "প্রতিদিনের আনুমানিক পণ্য",
+    priceTitle: "কাছাকাছি দামের তথ্য",
+    observedPrice: "অন্য দোকানে দেখা দাম (₹)",
+    addPrice: "দেখা দাম যোগ করুন",
+    checkedPrices: "নথিভুক্ত দাম",
+    priceMedian: "নথিভুক্ত দামের মধ্যমা",
+    proposedPrice: "আপনার পরিকল্পিত দাম",
+    rent: "মাসিক ভাড়া (₹)",
+    compareRent: "আনুমানিক বিক্রির সঙ্গে ভাড়ার তুলনা",
+    rentShare: "আনুমানিক মাসিক বিক্রিতে ভাড়ার অংশ",
+    rentNote: "৩০ দিনের অনুমানের ভিত্তিতে তুলনা; ভাড়ার কোনো সার্বজনীন নিরাপদ সীমা নেই।",
+    pilotTitle: "৭ দিনের পাইলট খাতা",
+    pilotNote: "সম্পন্ন দিনের প্রকৃত বিক্রি এবং জানা থাকলে অন্যান্য খরচ লিখুন। তথ্য এই ডিভাইসে সংরক্ষিত থাকবে।",
+    targetUnits: "প্রতিদিনের পূর্বাভাস",
+    dayUnits: "বিক্রি হওয়া পণ্য",
+    evaluatePilot: "পাইলটের ফল দেখুন",
+    daysRecorded: "নথিভুক্ত দিন",
+    averageSales: "প্রতিদিনের গড় বিক্রি",
+    forecastRatio: "গড় বনাম পূর্বাভাস",
+    dailyExpense: "অন্যান্য দৈনিক খরচ (₹)",
+    grossRevenue: "নথিভুক্ত পণ্যের বিক্রি",
+    itemCost: "নথিভুক্ত পণ্যের খরচ",
+    grossProfit: "মোট লাভ",
+    netProfit: "লিখিত খরচের পর লাভ",
+    goodSign: "আপনার পূর্বাভাসের তুলনায় ভালো লক্ষণ",
+    belowForecast: "পূর্বাভাসের চেয়ে সামান্য কম",
+    tryAnotherSpot: "অন্য জায়গায় পরীক্ষা করার কথা ভাবুন",
+  },
+};
+
 type ChatResponse = {
   updated_state: VyaparState;
   response_text: string;
@@ -684,8 +950,28 @@ export default function VyaparSaathiCityApp() {
   });
   const [supplierQuotes, setSupplierQuotes] = useState<SupplierQuote[]>([]);
   const [moneyLoading, setMoneyLoading] = useState(false);
+  const [groundInputs, setGroundInputs] = useState<GroundInputs>({
+    peopleCount: "",
+    minutesCounted: "10",
+    sellingHours: "",
+    buyingRate: "1.5",
+    observedPrice: "",
+    monthlyRent: "",
+  });
+  const [priceChecks, setPriceChecks] = useState<number[]>([]);
+  const [footfallResult, setFootfallResult] = useState<FootfallResult | null>(null);
+  const [rentBurdenResult, setRentBurdenResult] = useState<RentBurdenResult | null>(null);
+  const [pilotInputs, setPilotInputs] = useState<PilotInputs>({
+    forecast: "",
+    dailySales: ["", "", "", "", "", "", ""],
+    dailyExpenses: ["", "", "", "", "", "", ""],
+  });
+  const [pilotResult, setPilotResult] = useState<PilotResult | null>(null);
+  const [groundError, setGroundError] = useState("");
+  const [groundLoading, setGroundLoading] = useState(false);
   const t = copy[language];
   const money = moneyCopy[language];
+  const ground = groundCopy[language];
   const wantsLoan = vyaparState.user_profile.loan_needed;
 
   useEffect(() => {
@@ -701,6 +987,12 @@ export default function VyaparSaathiCityApp() {
           financeResult?: FinanceResult | null;
           supplierQuotes?: SupplierQuote[];
           completedLicences?: Record<string, boolean>;
+          groundInputs?: GroundInputs;
+          priceChecks?: number[];
+          footfallResult?: FootfallResult | null;
+          rentBurdenResult?: RentBurdenResult | null;
+          pilotInputs?: PilotInputs;
+          pilotResult?: PilotResult | null;
         };
         const savedLanguage = parsed.language && isLanguage(parsed.language) ? parsed.language : "English";
         const initial = createInitialState(savedLanguage);
@@ -738,6 +1030,18 @@ export default function VyaparSaathiCityApp() {
         if (parsed.financeResult) setFinanceResult(parsed.financeResult);
         if (parsed.supplierQuotes) setSupplierQuotes(parsed.supplierQuotes);
         if (parsed.completedLicences) setCompletedLicences(parsed.completedLicences);
+        if (parsed.groundInputs) setGroundInputs(parsed.groundInputs);
+        if (parsed.priceChecks) setPriceChecks(parsed.priceChecks);
+        if (parsed.footfallResult) setFootfallResult(parsed.footfallResult);
+        if (parsed.rentBurdenResult) setRentBurdenResult(parsed.rentBurdenResult);
+        if (parsed.pilotInputs) {
+          setPilotInputs({
+            forecast: parsed.pilotInputs.forecast ?? "",
+            dailySales: Array.from({ length: 7 }, (_, index) => parsed.pilotInputs?.dailySales[index] ?? ""),
+            dailyExpenses: Array.from({ length: 7 }, (_, index) => parsed.pilotInputs?.dailyExpenses?.[index] ?? ""),
+          });
+        }
+        if (parsed.pilotResult) setPilotResult(parsed.pilotResult);
       } catch {
         window.localStorage.removeItem(storageKey);
       }
@@ -767,8 +1071,30 @@ export default function VyaparSaathiCityApp() {
       financeResult,
       supplierQuotes,
       completedLicences,
+      groundInputs,
+      priceChecks,
+      footfallResult,
+      rentBurdenResult,
+      pilotInputs,
+      pilotResult,
     }));
-  }, [activeScreen, completedLicences, financeInputs, financeResult, isHydrated, language, messages, supplierQuotes, vyaparState]);
+  }, [
+    activeScreen,
+    completedLicences,
+    financeInputs,
+    financeResult,
+    footfallResult,
+    groundInputs,
+    isHydrated,
+    language,
+    messages,
+    pilotInputs,
+    pilotResult,
+    priceChecks,
+    rentBurdenResult,
+    supplierQuotes,
+    vyaparState,
+  ]);
 
   useEffect(() => {
     if (!isHydrated || activeScreen !== "money" || businessTemplates.length > 0) return;
@@ -867,6 +1193,17 @@ export default function VyaparSaathiCityApp() {
   const selectedMarketSample = marketData?.market_samples.find(
     (sample) => sample.category === selectedCategory,
   );
+  const sortedObservedPrices = [...priceChecks].sort((a, b) => a - b);
+  const observedPriceMedian = sortedObservedPrices.length === 0
+    ? null
+    : sortedObservedPrices.length % 2 === 0
+      ? (sortedObservedPrices[sortedObservedPrices.length / 2 - 1] + sortedObservedPrices[sortedObservedPrices.length / 2]) / 2
+      : sortedObservedPrices[Math.floor(sortedObservedPrices.length / 2)];
+  const pilotVerdictText = pilotResult?.verdict === "good sign"
+    ? ground.goodSign
+    : pilotResult?.verdict === "slightly below forecast"
+      ? ground.belowForecast
+      : ground.tryAnotherSpot;
   const rushSample = marketData?.rush_samples[0];
   const upcomingWeather = weatherResult?.hourly.slice(new Date().getHours(), new Date().getHours() + 6) ?? [];
   const weatherAlert = upcomingWeather.find((forecast) => forecast.advice !== "normal");
@@ -1172,6 +1509,123 @@ export default function VyaparSaathiCityApp() {
     }
   };
 
+  const estimateFootfallSales = async () => {
+    const peopleCount = Number(groundInputs.peopleCount);
+    const minutes = Number(groundInputs.minutesCounted);
+    const sellingHours = Number(groundInputs.sellingHours);
+    const buyingRate = Number(groundInputs.buyingRate) / 100;
+    if ([groundInputs.peopleCount, groundInputs.minutesCounted, groundInputs.sellingHours, groundInputs.buyingRate]
+      .some((value) => !value.trim()) ||
+      [peopleCount, minutes, sellingHours, buyingRate].some((value) => !Number.isFinite(value) || value < 0) ||
+      minutes === 0 || sellingHours === 0 || buyingRate > 1) {
+      setGroundError(money.error);
+      return;
+    }
+    setGroundLoading(true);
+    setGroundError("");
+    try {
+      const response = await axios.post<FootfallResult>(`${apiBaseUrl}/api/city/footfall-forecast`, {
+        people_count: peopleCount,
+        minutes_counted: minutes,
+        selling_hours: sellingHours,
+        buying_rate: buyingRate,
+      });
+      setFootfallResult(response.data);
+      setRentBurdenResult(null);
+    } catch {
+      setGroundError(money.error);
+    } finally {
+      setGroundLoading(false);
+    }
+  };
+
+  const addObservedPrice = () => {
+    const price = Number(groundInputs.observedPrice);
+    if (!groundInputs.observedPrice.trim() || !Number.isFinite(price) || price <= 0) {
+      setGroundError(money.error);
+      return;
+    }
+    setPriceChecks((previous) => [...previous, price]);
+    setGroundInputs((previous) => ({ ...previous, observedPrice: "" }));
+    setGroundError("");
+  };
+
+  const compareRentWithSales = async () => {
+    const monthlyRent = Number(groundInputs.monthlyRent);
+    const dailyUnits = footfallResult?.estimated_units_per_day ?? Number(financeInputs.dailyUnits);
+    const sellingPrice = Number(financeInputs.sellingPrice);
+    if (!groundInputs.monthlyRent.trim() || !Number.isFinite(monthlyRent) || monthlyRent < 0 ||
+      !Number.isFinite(dailyUnits) || dailyUnits < 0 ||
+      !financeInputs.sellingPrice.trim() || !Number.isFinite(sellingPrice) || sellingPrice < 0) {
+      setGroundError(money.error);
+      return;
+    }
+    setGroundLoading(true);
+    setGroundError("");
+    try {
+      const response = await axios.post<RentBurdenResult>(`${apiBaseUrl}/api/city/rent-burden`, {
+        monthly_rent: monthlyRent,
+        estimated_daily_units: dailyUnits,
+        selling_price: sellingPrice,
+      });
+      setRentBurdenResult(response.data);
+    } catch {
+      setGroundError(money.error);
+    } finally {
+      setGroundLoading(false);
+    }
+  };
+
+  const reviewPilot = async () => {
+    const recordedDays = pilotInputs.dailySales
+      .map((value, index) => ({ value, index }))
+      .filter((day) => day.value.trim());
+    const sales = recordedDays.map((day) => Number(day.value));
+    const fallbackForecast = footfallResult?.estimated_units_per_day ?? Number(financeInputs.dailyUnits);
+    const forecast = Number(pilotInputs.forecast || fallbackForecast);
+    if (sales.length === 0 || sales.some((value) => !Number.isFinite(value) || value < 0) ||
+      !Number.isFinite(forecast) || forecast <= 0) {
+      setGroundError(money.error);
+      return;
+    }
+    const expenseEntries = recordedDays.map((day) => pilotInputs.dailyExpenses[day.index]);
+    const enteredExpenseCount = expenseEntries.filter((value) => value.trim()).length;
+    if (enteredExpenseCount > 0 && enteredExpenseCount !== recordedDays.length) {
+      setGroundError(money.error);
+      return;
+    }
+    const dailyExpenses = enteredExpenseCount === recordedDays.length
+      ? expenseEntries.map(Number)
+      : undefined;
+    if (dailyExpenses?.some((value) => !Number.isFinite(value) || value < 0)) {
+      setGroundError(money.error);
+      return;
+    }
+    const hasPriceData = Boolean(financeInputs.sellingPrice.trim() || financeInputs.unitCost.trim());
+    const sellingPrice = Number(financeInputs.sellingPrice);
+    const unitCost = Number(financeInputs.unitCost);
+    if (hasPriceData && (!financeInputs.sellingPrice.trim() || !financeInputs.unitCost.trim() ||
+      !Number.isFinite(sellingPrice) || sellingPrice < 0 || !Number.isFinite(unitCost) || unitCost < 0)) {
+      setGroundError(money.error);
+      return;
+    }
+    setGroundLoading(true);
+    setGroundError("");
+    try {
+      const response = await axios.post<PilotResult>(`${apiBaseUrl}/api/city/pilot`, {
+        sales_by_day: sales,
+        forecast_units_per_day: forecast,
+        ...(hasPriceData ? { selling_price: sellingPrice, unit_cost: unitCost } : {}),
+        ...(dailyExpenses ? { daily_expenses: dailyExpenses } : {}),
+      });
+      setPilotResult(response.data);
+    } catch {
+      setGroundError(money.error);
+    } finally {
+      setGroundLoading(false);
+    }
+  };
+
   const TopAppBar = ({ title = "VyaparSaathi City" }: { title?: string }) => (
     <header className="fixed top-0 left-0 right-0 z-50 mx-auto flex h-16 max-w-md items-center justify-between border-b border-outline-variant bg-surface px-4">
       <div className="flex items-center gap-3">
@@ -1463,6 +1917,129 @@ export default function VyaparSaathiCityApp() {
                 </ul>
               </>
             )}
+          </section>
+
+          <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+            <h2 className="font-bold">{ground.groundTitle}</h2>
+            <p className="mt-2 text-xs leading-relaxed text-outline">{ground.groundNote}</p>
+            <p className="mt-2 text-xs font-semibold text-outline">
+              {t.city}: {vyaparState.user_profile.city}
+              {vyaparState.business_context.candidate_zones.length > 0 &&
+                ` · ${vyaparState.business_context.candidate_zones.join(", ")}`}
+            </p>
+            {groundError && <p className="mt-3 rounded-xl bg-rose-50 p-3 text-sm text-rose-800" role="alert">{groundError}</p>}
+
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {([
+                ["peopleCount", ground.peopleCount],
+                ["minutesCounted", ground.minutesCounted],
+                ["sellingHours", ground.sellingHours],
+                ["buyingRate", ground.buyingRate],
+              ] as const).map(([field, label]) => (
+                <label key={field} className="text-xs font-semibold text-outline">
+                  {label}
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={groundInputs[field]}
+                    onChange={(event) => {
+                      setGroundInputs((previous) => ({ ...previous, [field]: event.target.value }));
+                      setFootfallResult(null);
+                      setRentBurdenResult(null);
+                    }}
+                    className="mt-1 w-full rounded-xl border border-outline-variant bg-white px-3 py-2.5 text-sm font-normal text-on-surface"
+                  />
+                </label>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => void estimateFootfallSales()}
+              disabled={groundLoading}
+              className="mt-3 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+            >{groundLoading ? money.loading : ground.estimateFootfall}</button>
+            {footfallResult && (
+              <dl className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-outline">{ground.peoplePerHour}</dt>
+                  <dd className="mt-1 font-bold">{footfallResult.people_per_hour}</dd>
+                </div>
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-outline">{ground.estimatedUnits}</dt>
+                  <dd className="mt-1 font-bold">{footfallResult.estimated_units_per_day}</dd>
+                </div>
+              </dl>
+            )}
+
+            <div className="mt-5 border-t border-outline-variant/50 pt-4">
+              <h3 className="text-sm font-bold">{ground.priceTitle}</h3>
+              <label className="mt-3 block text-xs font-semibold text-outline">
+                {ground.observedPrice}
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={groundInputs.observedPrice}
+                  onChange={(event) => setGroundInputs((previous) => ({ ...previous, observedPrice: event.target.value }))}
+                  className="mt-1 w-full rounded-xl border border-outline-variant bg-white px-3 py-2.5 text-sm font-normal text-on-surface"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={addObservedPrice}
+                className="mt-2 rounded-xl border border-primary px-3 py-2 text-sm font-semibold text-primary"
+              >{ground.addPrice}</button>
+              {priceChecks.length > 0 && (
+                <div className="mt-3 rounded-xl bg-surface-container-low p-3 text-sm">
+                  <p>{ground.checkedPrices}: {sortedObservedPrices.map(formatRupees).join(" · ")}</p>
+                  {observedPriceMedian !== null && (
+                    <p className="mt-1 font-bold">{ground.priceMedian}: {formatRupees(observedPriceMedian)}</p>
+                  )}
+                  {financeInputs.sellingPrice && (
+                    <p className="mt-1 text-xs text-outline">
+                      {ground.proposedPrice}: {formatRupees(Number(financeInputs.sellingPrice))}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-5 border-t border-outline-variant/50 pt-4">
+              <label className="block text-xs font-semibold text-outline">
+                {ground.rent}
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={groundInputs.monthlyRent}
+                  onChange={(event) => {
+                    setGroundInputs((previous) => ({ ...previous, monthlyRent: event.target.value }));
+                    setRentBurdenResult(null);
+                  }}
+                  className="mt-1 w-full rounded-xl border border-outline-variant bg-white px-3 py-2.5 text-sm font-normal text-on-surface"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => void compareRentWithSales()}
+                disabled={groundLoading}
+                className="mt-2 rounded-xl border border-primary px-3 py-2 text-sm font-semibold text-primary disabled:opacity-50"
+              >{groundLoading ? money.loading : ground.compareRent}</button>
+              <p className="mt-2 text-xs text-outline">{ground.rentNote}</p>
+              {rentBurdenResult && (
+                <dl className="mt-3 space-y-2 rounded-xl bg-surface-container-low p-3 text-sm">
+                  <div className="flex justify-between gap-3">
+                    <dt>{ground.rentShare}</dt>
+                    <dd className="font-bold">{rentBurdenResult.rent_share_percent === null ? "—" : `${rentBurdenResult.rent_share_percent}%`}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt>{ground.estimatedUnits}</dt>
+                    <dd>{formatRupees(rentBurdenResult.estimated_monthly_sales)}</dd>
+                  </div>
+                </dl>
+              )}
+            </div>
           </section>
 
           <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4">
@@ -1787,6 +2364,115 @@ export default function VyaparSaathiCityApp() {
               </dl>
             </section>
           )}
+          <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+            <h2 className="font-bold">{ground.pilotTitle}</h2>
+            <p className="mt-2 text-xs leading-relaxed text-outline">{ground.pilotNote}</p>
+            {groundError && <p className="mt-3 rounded-xl bg-rose-50 p-3 text-sm text-rose-800" role="alert">{groundError}</p>}
+            <label className="mt-3 block text-xs font-semibold text-outline">
+              {ground.targetUnits}
+              <input
+                type="number"
+                min="0"
+                step="any"
+                value={pilotInputs.forecast}
+                placeholder={String(footfallResult?.estimated_units_per_day ?? financeInputs.dailyUnits)}
+                onChange={(event) => {
+                  setPilotInputs((previous) => ({ ...previous, forecast: event.target.value }));
+                  setPilotResult(null);
+                }}
+                className="mt-1 w-full rounded-xl border border-outline-variant bg-white px-3 py-2.5 text-sm font-normal text-on-surface"
+              />
+            </label>
+            <div className="mt-3 space-y-3">
+              {pilotInputs.dailySales.map((units, index) => (
+                <div key={index} className="grid grid-cols-2 gap-3">
+                  <label className="text-xs font-semibold text-outline">
+                    {index + 1} · {ground.dayUnits}
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={units}
+                      onChange={(event) => {
+                        setPilotInputs((previous) => ({
+                          ...previous,
+                          dailySales: previous.dailySales.map((value, day) =>
+                            day === index ? event.target.value : value,
+                          ),
+                        }));
+                        setPilotResult(null);
+                      }}
+                      className="mt-1 w-full rounded-xl border border-outline-variant bg-white px-3 py-2.5 text-sm font-normal text-on-surface"
+                    />
+                  </label>
+                  <label className="text-xs font-semibold text-outline">
+                    {ground.dailyExpense}
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={pilotInputs.dailyExpenses[index] ?? ""}
+                      onChange={(event) => {
+                        setPilotInputs((previous) => ({
+                          ...previous,
+                          dailyExpenses: previous.dailyExpenses.map((value, day) =>
+                            day === index ? event.target.value : value,
+                          ),
+                        }));
+                        setPilotResult(null);
+                      }}
+                      className="mt-1 w-full rounded-xl border border-outline-variant bg-white px-3 py-2.5 text-sm font-normal text-on-surface"
+                    />
+                  </label>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => void reviewPilot()}
+              disabled={groundLoading}
+              className="mt-4 w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white disabled:opacity-50"
+            >{groundLoading ? money.loading : ground.evaluatePilot}</button>
+            {pilotResult && (
+              <div className="mt-4 rounded-xl bg-surface-container-low p-3">
+                <p className="font-bold">{pilotVerdictText}</p>
+                <dl className="mt-2 space-y-2 text-sm">
+                  <div className="flex justify-between gap-3">
+                    <dt>{ground.daysRecorded}</dt><dd>{pilotResult.days_recorded}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt>{ground.averageSales}</dt><dd>{pilotResult.average_units_per_day}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt>{ground.forecastRatio}</dt><dd>{Math.round(pilotResult.forecast_ratio * 100)}%</dd>
+                  </div>
+                  {pilotResult.gross_revenue !== undefined && (
+                    <>
+                      <div className="flex justify-between gap-3">
+                        <dt>{ground.grossRevenue}</dt><dd>{formatRupees(pilotResult.gross_revenue)}</dd>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <dt>{ground.itemCost}</dt><dd>{formatRupees(pilotResult.item_cost ?? 0)}</dd>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <dt>{ground.grossProfit}</dt><dd>{formatRupees(pilotResult.gross_profit ?? 0)}</dd>
+                      </div>
+                    </>
+                  )}
+                  {pilotResult.other_expenses !== undefined && (
+                    <div className="flex justify-between gap-3">
+                      <dt>{ground.dailyExpense}</dt><dd>{formatRupees(pilotResult.other_expenses)}</dd>
+                    </div>
+                  )}
+                  {pilotResult.net_profit !== undefined && (
+                    <div className="flex justify-between gap-3 font-bold">
+                      <dt>{ground.netProfit}</dt><dd>{formatRupees(pilotResult.net_profit)}</dd>
+                    </div>
+                  )}
+                </dl>
+              </div>
+            )}
+          </section>
           <p className="mt-4 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">{t.sampleNotice}</p>
           <BottomNav />
         </div>

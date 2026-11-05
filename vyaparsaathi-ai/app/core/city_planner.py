@@ -238,6 +238,22 @@ def estimate_daily_sales(
     }
 
 
+def estimate_rent_burden(
+    monthly_rent: float,
+    estimated_daily_units: float,
+    selling_price: float,
+) -> dict[str, float | None]:
+    rent = _nonnegative(monthly_rent, "monthly_rent")
+    daily_units = _nonnegative(estimated_daily_units, "estimated_daily_units")
+    price = _nonnegative(selling_price, "selling_price")
+    monthly_sales = daily_units * price * 30
+    return {
+        "monthly_rent": round(rent, 2),
+        "estimated_monthly_sales": round(monthly_sales, 2),
+        "rent_share_percent": round(rent / monthly_sales * 100, 2) if monthly_sales else None,
+    }
+
+
 def weather_advice(temperature_celsius: float, precipitation_probability: float) -> str:
     temperature = float(temperature_celsius)
     if not math.isfinite(temperature):
@@ -252,23 +268,51 @@ def weather_advice(temperature_celsius: float, precipitation_probability: float)
     return "normal"
 
 
-def evaluate_pilot(sales_by_day: Sequence[float], forecast_units_per_day: float) -> dict[str, float | str]:
+def evaluate_pilot(
+    sales_by_day: Sequence[float],
+    forecast_units_per_day: float,
+    *,
+    selling_price: float | None = None,
+    unit_cost: float | None = None,
+    daily_expenses: Sequence[float] | None = None,
+) -> dict[str, float | str | int]:
     if not sales_by_day:
         raise ValueError("At least one pilot day is required")
     sales = [_nonnegative(units, "sales_by_day") for units in sales_by_day]
     forecast = _nonnegative(forecast_units_per_day, "forecast_units_per_day")
     if forecast == 0:
         raise ValueError("forecast_units_per_day must be greater than zero")
+    if (selling_price is None) != (unit_cost is None):
+        raise ValueError("selling_price and unit_cost must be provided together")
     average = sum(sales) / len(sales)
     ratio = average / forecast
     verdict = "good sign" if ratio >= 1 else "slightly below forecast" if ratio >= 0.7 else "try another spot"
-    return {
+    other_expense_total = 0.0
+    if daily_expenses is not None:
+        expenses = [_nonnegative(amount, "daily_expenses") for amount in daily_expenses]
+        if len(expenses) != len(sales):
+            raise ValueError("daily_expenses must match the recorded sales days")
+        other_expense_total = sum(expenses)
+    result: dict[str, float | str | int] = {
         "days_recorded": len(sales),
         "average_units_per_day": round(average, 2),
         "forecast_units_per_day": round(forecast, 2),
         "forecast_ratio": round(ratio, 2),
         "verdict": verdict,
     }
+    if daily_expenses is not None:
+        result["other_expenses"] = round(other_expense_total, 2)
+    if selling_price is not None and unit_cost is not None:
+        price = _nonnegative(selling_price, "selling_price")
+        cost = _nonnegative(unit_cost, "unit_cost")
+        revenue = sum(sales) * price
+        item_cost = sum(sales) * cost
+        result["gross_revenue"] = round(revenue, 2)
+        result["item_cost"] = round(item_cost, 2)
+        result["gross_profit"] = round(revenue - item_cost, 2)
+        if daily_expenses is not None:
+            result["net_profit"] = round(revenue - item_cost - other_expense_total, 2)
+    return result
 
 
 def label_data_confidence(
