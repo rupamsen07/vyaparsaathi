@@ -1,0 +1,90 @@
+[
+  {
+    "id": "momo_cart",
+    "name": "Momo cart",
+    "model": "mobile",
+    "busy_period": "evening",
+    "selling_price": 60,
+    "startup_cost": 42000,
+    "unit_cost": 16.58,
+    "unit_cost_is_sample": true,
+    "data_confidence": "Sample data"
+  },
+  {
+    "id": "chai_snacks_cart",
+    "name": "Chai and snacks cart",
+    "model": "mobile",
+    "busy_period": "morning",
+    "selling_price": 15,
+    "startup_cost": 28000,
+    "unit_cost": null,
+    "unit_cost_is_sample": true,
+    "data_confidence": "Sample data"
+  },
+  {
+    "id": "vada_pav_cart",
+    "name": "Vada pav cart",
+    "model": "mobile",
+    "busy_period": "evening",
+    "selling_price": 20,
+    "startup_cost": 33500,
+    "unit_cost": null,
+    "unit_cost_is_sample": true,
+    "data_confidence": "Sample data"
+  },
+  {
+    "id": "fresh_juice_cart",
+    "name": "Fresh juice cart",
+    "model": "mobile",
+    "busy_period": "lunch",
+    "selling_price": 40,
+    "startup_cost": 35000,
+    "unit_cost": null,
+    "unit_cost_is_sample": true,
+    "data_confidence": "Sample data"
+  },
+  {
+    "id": "home_tiffin",
+    "name": "Home tiffin service",
+    "model": "home",
+    "busy_period": "lunch",
+    "selling_price": 90,
+    "startup_cost": 21500,
+    "unit_cost": null,
+    "unit_cost_is_sample": true,
+    "data_confidence": "Sample data"
+  },
+  {
+    "id": "tailoring_unit",
+    "name": "Tailoring unit",
+    "model": "fixed",
+    "busy_period": "evening",
+    "selling_price": 350,
+    "startup_cost": 41000,
+    "unit_cost": null,
+    "unit_cost_is_sample": true,
+    "data_confidence": "Sample data"
+  },
+  {
+    "id": "phone_repair_shop",
+    "name": "Phone repair shop",
+    "model": "fixed",
+    "busy_period": "evening",
+    "selling_price": 400,
+    "startup_cost": 47500,
+    "unit_cost": null,
+    "unit_cost_is_sample": true,
+    "data_confidence": "Sample data"
+  },
+  {
+    "id": "home_pickles_papad",
+    "name": "Home pickles and papad",
+    "model": "home",
+    "busy_period": "lunch",
+    "selling_price": 120,
+    "startup_cost": 15000,
+    "unit_cost": null,
+    "unit_cost_is_sample": true,
+    "data_confidence": "Sample data"
+  }
+]

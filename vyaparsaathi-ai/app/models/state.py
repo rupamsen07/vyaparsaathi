@@ -1,12 +1,15 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 class UserProfile(BaseModel):
     language: Optional[str] = None
+    city: Optional[str] = None
     district: Optional[str] = None
+    working_hours: Optional[str] = None
+    loan_needed: Optional[bool] = None
     available_capital: Optional[float] = None
-    skills: Optional[List[str]] = None
-    assets: Optional[List[str]] = None
+    skills: List[str] = Field(default_factory=list)
+    assets: List[str] = Field(default_factory=list)
 
 class BusinessContext(BaseModel):
     mode: Optional[str] = None
@@ -16,14 +19,25 @@ class BusinessContext(BaseModel):
     competitor_count: Optional[int] = None
     supply_distance_km: Optional[float] = None
     daily_input_cost: Optional[float] = None
-    additional_details: Optional[dict] = {}
+    additional_details: dict = Field(default_factory=dict)
 
 class FinancialEvaluation(BaseModel):
     total_project_cost: Optional[float] = None
+    startup_cost: Optional[float] = None
+    unit_cost: Optional[float] = None
+    selling_price: Optional[float] = None
+    fixed_monthly_cost: Optional[float] = None
+    expected_daily_units: Optional[float] = None
+    funding_gap: Optional[float] = None
+    margin_per_unit: Optional[float] = None
+    margin_percent: Optional[float] = None
     margin_money_10pct: Optional[float] = None
     loan_required_90pct: Optional[float] = None
+    loan_required: Optional[bool] = None
+    break_even_units_per_day: Optional[int] = None
     scheme_matched: Optional[str] = None
     estimated_monthly_emi: Optional[float] = None
+    estimated_monthly_profit: Optional[float] = None
     break_even_days: Optional[int] = None
 
 class VyaparState(BaseModel):
