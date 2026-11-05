@@ -1,34 +1,40 @@
+import asyncio
 import json
 import os
-import asyncio
 import time
 from collections import deque
 from pathlib import Path
+
 from dotenv import load_dotenv
 from deep_translator import GoogleTranslator
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
-from app.models.state import VyaparState, UserProfile, BusinessContext, FinancialEvaluation
-from app.core.finance import calculate_mosje_micro_finance
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-# Load the backend's .env regardless of the shell's current directory.
+from app.core.chat_profile import localized_question, next_profile_field, rule_based_extraction
+from app.models.state import VyaparState
+
+
 env_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(env_path, override=True)
 google_api_key = os.getenv("GOOGLE_API_KEY")
-if not google_api_key:
-    raise RuntimeError(f"GOOGLE_API_KEY is missing from {env_path}")
 
-# Use a currently supported Gemini model.
-extractor = ChatGoogleGenerativeAI(
-    model="gemini-3.6-flash", 
-    temperature=0.0,
-    google_api_key=google_api_key
+extractor = (
+    ChatGoogleGenerativeAI(
+        model="gemini-3.6-flash",
+        temperature=0.0,
+        google_api_key=google_api_key,
+    )
+    if google_api_key
+    else None
 )
-
-speaker = ChatGoogleGenerativeAI(
-    model="gemini-3.6-flash", 
-    temperature=0.4,
-    google_api_key=google_api_key
+speaker = (
+    ChatGoogleGenerativeAI(
+        model="gemini-3.6-flash",
+        temperature=0.4,
+        google_api_key=google_api_key,
+    )
+    if google_api_key
+    else None
 )
 
 
@@ -66,60 +72,57 @@ class GeminiRateLimiter:
 
 gemini_rate_limiter = GeminiRateLimiter()
 
-EXTRACT_PROMPT = """You are a strict data extraction bot. 
-Update the Current State based on the User Message.
+EXTRACT_PROMPT = """You extract explicit facts for a city small-business planning app.
+Update only values that the user stated. Never guess or infer a number, city, area, business,
+skill, work time, or loan preference. Keep existing values when the user did not change them.
+Use empty lists for `skills` and `assets`. Put other details in `business_context.additional_details`.
 
-Rules:
-- `assets` and `skills` must be lists of strings. 
-- Put extra details in `business_context.additional_details`.
-
-Current State: 
+Current State:
 {current_state}
 
-User Message: 
+User Message:
 "{user_message}"
 
-Output ONLY valid JSON matching this schema exactly:
+Return ONLY valid JSON matching this schema:
 {{
-    "user_profile": {{"language": null, "district": "Pune", "available_capital": null, "skills": [], "assets": []}},
-    "business_context": {{"mode": null, "category": null, "business_name": null, "candidate_zones": [], "competitor_count": 0, "supply_distance_km": 0.0, "daily_input_cost": 0.0, "additional_details": {{}}}},
-    "financial_evaluation": {{"total_project_cost": null, "margin_money_10pct": null, "loan_required_90pct": null, "scheme_matched": null, "estimated_monthly_emi": null, "break_even_days": 0}}
+    "user_profile": {{"language": null, "city": null, "district": null, "available_capital": null, "skills": [], "assets": [], "working_hours": null, "loan_needed": null}},
+    "business_context": {{"mode": null, "category": null, "business_name": null, "candidate_zones": [], "competitor_count": null, "supply_distance_km": null, "daily_input_cost": null, "additional_details": {{}}}},
+    "financial_evaluation": {{"total_project_cost": null, "startup_cost": null, "unit_cost": null, "selling_price": null, "fixed_monthly_cost": null, "expected_daily_units": null, "funding_gap": null, "margin_money_10pct": null, "loan_required_90pct": null, "loan_required": null, "break_even_units_per_day": null, "scheme_matched": null, "estimated_monthly_emi": null, "estimated_monthly_profit": null, "break_even_days": null}}
 }}
 """
 
-# Updated speaker prompt to strictly enforce the requested language
-SPEAK_PROMPT = """You are VyaparSaathi AI, an empathetic business advisor for rural Indian micro-entrepreneurs.
+SPEAK_PROMPT = """You are VyaparSaathi City, a practical, empathetic business-planning advisor
+for small businesses in Indian cities.
 
-CRITICAL INSTRUCTION: You MUST respond ENTIRELY in {language}. Do not use English unless the requested language is English.
+CRITICAL: Respond entirely in {language}. Do not use English unless English was requested.
 
-Review the current user state: {state_json}
+Profile:
+{state_json}
 
-Conversation so far:
+Conversation:
 {chat_history}
 
 The user just said: "{user_message}"
+Your next task: {target_topic}
 
-You need to ask them about this specific missing detail: {target_topic}
-
-Respond with a short, friendly conversational reply that acknowledges what they just said, and then asks a question about the target topic.
-Limit your response to 2 sentences. Your response MUST end with a question mark (?).
+Rules:
+- Ask only the requested onboarding question until the profile is complete.
+- In Discover mode, do not ask the user to choose a business; they need help finding an idea.
+- Never calculate money, invent local market facts, promise profit, or say a user is eligible for a loan.
+- Call estimates estimates and sample data sample data.
+- After onboarding, ask whether the user wants to explore location, busy hours, costs, or a launch plan.
+- Keep it short, acknowledge the user's message, and end with one clear question.
 """
+
 
 def _merge_state_values(existing, extracted):
     if isinstance(existing, dict) and isinstance(extracted, dict):
         merged = dict(existing)
         for key, value in extracted.items():
-            if key not in merged:
-                merged[key] = value
-            else:
-                merged[key] = _merge_state_values(merged[key], value)
+            merged[key] = _merge_state_values(merged.get(key), value) if key in merged else value
         return merged
-
     if isinstance(existing, list) and isinstance(extracted, list):
-        if not extracted:
-            return existing
-        return list(dict.fromkeys(existing + extracted))
-
+        return list(dict.fromkeys(existing + extracted)) if extracted else existing
     if extracted is None or extracted == "":
         return existing
     return extracted
@@ -139,6 +142,83 @@ def _response_text(content) -> str:
     return str(content).strip()
 
 
+def _parse_extraction(content: str) -> dict:
+    if content.startswith("```json"):
+        content = content[7:-3].strip()
+    elif content.startswith("```"):
+        content = content[3:-3].strip()
+    extracted = json.loads(content)
+    if "user_profile" not in extracted and len(extracted) == 1:
+        extracted = next(iter(extracted.values()))
+    if not isinstance(extracted, dict):
+        raise ValueError("The AI extraction response was not a JSON object")
+    return extracted
+
+
+async def process_chat_message(
+    current_state: VyaparState,
+    user_message: str,
+    chat_history: list,
+) -> dict:
+    state_dict = current_state.model_dump()
+    extracted_state = None
+
+    if extractor is not None:
+        try:
+            extract_chain = ChatPromptTemplate.from_template(EXTRACT_PROMPT) | extractor
+            await gemini_rate_limiter.wait_for_slot()
+            extraction_response = await extract_chain.ainvoke({
+                "current_state": json.dumps(state_dict),
+                "user_message": user_message,
+            })
+            extracted_state = _parse_extraction(_response_text(extraction_response.content))
+        except Exception as error:
+            print(f"AI extraction unavailable; using rule-based extraction: {error}")
+
+    try:
+        if extracted_state is None:
+            updated_state = rule_based_extraction(current_state, user_message)
+        else:
+            merged_state = _merge_state_values(state_dict, extracted_state)
+            profile = merged_state.get("user_profile") or {}
+            profile["language"] = (state_dict.get("user_profile") or {}).get("language")
+            merged_state["user_profile"] = profile
+            updated_state = VyaparState(**merged_state)
+    except (TypeError, ValueError, KeyError) as error:
+        print(f"State extraction could not be applied; retaining the current profile: {error}")
+        updated_state = current_state
+
+    next_field = next_profile_field(updated_state)
+    language = (
+        updated_state.user_profile.language
+        if updated_state.user_profile and updated_state.user_profile.language
+        else "English"
+    )
+    response_text = ""
+    if speaker is not None:
+        try:
+            speak_chain = ChatPromptTemplate.from_template(SPEAK_PROMPT) | speaker
+            await gemini_rate_limiter.wait_for_slot()
+            response = await speak_chain.ainvoke({
+                "language": language,
+                "state_json": updated_state.model_dump_json(),
+                "user_message": user_message,
+                "target_topic": (
+                    f"Ask about the missing {next_field} profile detail."
+                    if next_field
+                    else "Ask which planning area the user wants to explore first."
+                ),
+                "chat_history": json.dumps(chat_history[-10:]),
+            })
+            response_text = _response_text(response.content)
+        except Exception as error:
+            print(f"AI response unavailable; using a localized onboarding question: {error}")
+    if not response_text:
+        response_text = localized_question(next_field, language, updated_state)
+
+    return {"updated_state": updated_state, "response_text": response_text}
+
+
 def _is_translation_error(text: str) -> bool:
     error_markers = (
         "error 500",
@@ -149,84 +229,6 @@ def _is_translation_error(text: str) -> bool:
     )
     normalized = text.lower()
     return any(marker in normalized for marker in error_markers)
-
-
-async def process_chat_message(current_state: VyaparState, user_message: str, chat_history: list) -> dict:
-    state_dict = current_state.model_dump()
-    
-    # 1. EXTRACT STATE FIRST
-    extract_chain = ChatPromptTemplate.from_template(EXTRACT_PROMPT) | extractor
-    await gemini_rate_limiter.wait_for_slot()
-    extract_resp = await extract_chain.ainvoke({
-        "current_state": json.dumps(state_dict),
-        "user_message": user_message
-    })
-    
-    try:
-        content = _response_text(extract_resp.content)
-        # Strip markdown code blocks if Gemini adds them
-        if content.startswith("```json"):
-            content = content[7:-3].strip()
-        elif content.startswith("```"):
-            content = content[3:-3].strip()
-            
-        extracted_state_dict = json.loads(content)
-        if "user_profile" not in extracted_state_dict and len(extracted_state_dict.keys()) == 1:
-            extracted_state_dict = list(extracted_state_dict.values())[0]
-        updated_state_dict = _merge_state_values(state_dict, extracted_state_dict)
-        # Language is selected by the client and must not be inferred by extraction.
-        if state_dict.get("user_profile") and updated_state_dict.get("user_profile"):
-            updated_state_dict["user_profile"]["language"] = state_dict["user_profile"].get("language")
-        updated_state = VyaparState(**updated_state_dict)
-    except Exception as e:
-        print(f"Extraction Error: {e}")
-        updated_state = current_state
-
-    # 2. PYTHON STATE MACHINE
-    target_topic = "Ask if they need help with any other planning."
-    
-    if not updated_state.business_context or not updated_state.business_context.business_name:
-        target_topic = "Ask them what exact business they want to start (e.g., food cart, tailoring)."
-    elif not updated_state.user_profile or not updated_state.user_profile.available_capital:
-        target_topic = "Ask how much total money (capital) they currently have available to start."
-    elif not updated_state.financial_evaluation or not updated_state.financial_evaluation.total_project_cost:
-        target_topic = "Ask them what their estimated TOTAL setup cost will be in rupees."
-    elif not updated_state.business_context or not updated_state.business_context.candidate_zones:
-        target_topic = "Ask exactly where they plan to locate or open this business (which street or area)."
-    elif not updated_state.user_profile or not updated_state.user_profile.skills:
-        target_topic = "Ask what related skills or experience they have for this specific business."
-    elif not updated_state.user_profile or not updated_state.user_profile.assets:
-        target_topic = "Ask what equipment or assets they already own for this business."
-
-    # 3. GENERATE THE TEXT RESPONSE
-    # Safely get the requested language from the frontend, default to English
-    current_language = updated_state.user_profile.language if updated_state.user_profile and updated_state.user_profile.language else "English"
-    
-    speak_chain = ChatPromptTemplate.from_template(SPEAK_PROMPT) | speaker
-    await gemini_rate_limiter.wait_for_slot()
-    speak_resp = await speak_chain.ainvoke({
-        "language": current_language,
-        "state_json": updated_state.model_dump_json(),
-        "user_message": user_message,
-        "target_topic": target_topic,
-        "chat_history": json.dumps(chat_history[-10:])
-    })
-    
-    reply_text = _response_text(speak_resp.content)
-
-    # Trigger MoSJE calculation
-    if updated_state.financial_evaluation and updated_state.financial_evaluation.total_project_cost:
-        cost = updated_state.financial_evaluation.total_project_cost
-        fin_calc = calculate_mosje_micro_finance(cost)
-        updated_state.financial_evaluation.margin_money_10pct = fin_calc["beneficiary_margin"]
-        updated_state.financial_evaluation.loan_required_90pct = fin_calc["loan_amount"]
-        updated_state.financial_evaluation.estimated_monthly_emi = fin_calc["monthly_emi"]
-        updated_state.financial_evaluation.scheme_matched = fin_calc["scheme_name"]
-
-    return {
-        "updated_state": updated_state,
-        "response_text": reply_text
-    }
 
 
 async def translate_chat_history(chat_history: list, language: str) -> list:
@@ -251,7 +253,7 @@ async def translate_chat_history(chat_history: list, language: str) -> list:
             raise RuntimeError("Translation provider returned an error response")
         return translated
 
-    translated = []
+    translated_history = []
     for message in chat_history:
         text = message.get("text", "")
         translated_text = text
@@ -261,11 +263,7 @@ async def translate_chat_history(chat_history: list, language: str) -> list:
                 break
             except Exception as error:
                 if attempt == 2:
-                    print(f"Translation fallback for message: {error}")
-                else:
-                    await asyncio.sleep(0.5 * (attempt + 1))
-        translated.append({
-            **message,
-            "text": translated_text,
-        })
-    return translated
+                    raise RuntimeError("Unable to translate the conversation") from error
+                await asyncio.sleep(0.5 * (attempt + 1))
+        translated_history.append({**message, "text": translated_text})
+    return translated_history

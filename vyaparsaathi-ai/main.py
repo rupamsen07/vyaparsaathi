@@ -62,9 +62,7 @@ async def translate_chat_endpoint(req: TranslateChatRequest):
     try:
         translated_history = await translate_chat_history(req.chat_history, req.language)
     except Exception as error:
-        # Keep language switching usable if the external translator is unavailable.
-        print(f"Chat translation unavailable: {error}")
-        translated_history = req.chat_history
+        raise HTTPException(status_code=503, detail="Unable to translate the conversation right now.") from error
     return {"chat_history": translated_history}
 
 @app.post("/api/evaluate-finance")
