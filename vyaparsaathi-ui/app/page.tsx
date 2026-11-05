@@ -14,7 +14,7 @@ const languageOptions = [
 type Language = (typeof languageOptions)[number]["code"];
 type City = "Bengaluru" | "Pune";
 type Mode = "discover" | "launch";
-type Screen = "home" | "advisor" | "market" | "time" | "plan";
+type Screen = "home" | "advisor" | "market" | "time" | "money" | "plan";
 
 type Translation = {
   greeting: string;
@@ -82,7 +82,7 @@ const copy: Record<Language, Translation> = {
     marketTitle: "Local market",
     marketMessage: "Market data tools are being connected. Until real city datasets are added, figures stay labelled as sample data.",
     planTitle: "My business plan",
-    planMessage: "Your answers are saved on this device. Business costs, break-even and launch steps will appear here as you build your plan.",
+    planMessage: "Your answers are saved on this device. Use the Money planner to calculate costs, break-even and funding needs.",
     navChat: "Saathi",
     navPlan: "My plan",
     navMarket: "Market",
@@ -128,7 +128,7 @@ const copy: Record<Language, Translation> = {
     marketTitle: "स्थानीय बाज़ार",
     marketMessage: "स्थानीय बाज़ार के डेटा टूल जोड़े जा रहे हैं। असली शहर का डेटा आने तक आंकड़े नमूना ही रहेंगे।",
     planTitle: "मेरी व्यवसाय योजना",
-    planMessage: "आपके जवाब इस डिवाइस पर सेव हैं। लागत, ब्रेक-ईवन और शुरू करने के कदम आपकी योजना बनाते समय यहां दिखेंगे।",
+    planMessage: "आपके जवाब इस डिवाइस पर सेव हैं। लागत, ब्रेक-ईवन और पूंजी की जरूरत निकालने के लिए पैसा योजनाकार खोलें।",
     navChat: "साथी",
     navPlan: "मेरी योजना",
     navMarket: "बाज़ार",
@@ -174,7 +174,7 @@ const copy: Record<Language, Translation> = {
     marketTitle: "स्थानिक बाजार",
     marketMessage: "स्थानिक बाजाराची डेटा साधने जोडली जात आहेत. शहराचा खरा डेटा मिळेपर्यंत आकडे नमुना म्हणूनच दाखवले जातील.",
     planTitle: "माझी व्यवसाय योजना",
-    planMessage: "तुमची उत्तरे या डिव्हाइसवर जतन केली आहेत. खर्च, ब्रेक-इव्हन आणि सुरुवातीची पावले योजना तयार होताना येथे दिसतील.",
+    planMessage: "तुमची उत्तरे या डिव्हाइसवर जतन केली आहेत. खर्च, ब्रेक-इव्हन आणि भांडवलाची गरज मोजण्यासाठी पैसे नियोजक उघडा.",
     navChat: "साथी",
     navPlan: "माझी योजना",
     navMarket: "बाजार",
@@ -220,7 +220,7 @@ const copy: Record<Language, Translation> = {
     marketTitle: "સ્થાનિક બજાર",
     marketMessage: "સ્થાનિક બજારનાં ડેટા સાધનો જોડાઈ રહ્યાં છે. શહેરનો વાસ્તવિક ડેટા ઉમેરાય ત્યાં સુધી આંકડા નમૂના તરીકે જ રહેશે.",
     planTitle: "મારી વ્યવસાય યોજના",
-    planMessage: "તમારા જવાબો આ ઉપકરણ પર સાચવ્યા છે. ખર્ચ, બ્રેક-ઈવન અને શરૂઆતનાં પગલાં તમારી યોજના સાથે અહીં દેખાશે.",
+    planMessage: "તમારા જવાબો આ ઉપકરણ પર સાચવ્યા છે. ખર્ચ, બ્રેક-ઈવન અને ભંડોળની જરૂર ગણવા માટે પૈસાનું આયોજન ખોલો.",
     navChat: "સાથી",
     navPlan: "મારી યોજના",
     navMarket: "બજાર",
@@ -266,7 +266,7 @@ const copy: Record<Language, Translation> = {
     marketTitle: "স্থানীয় বাজার",
     marketMessage: "স্থানীয় বাজারের ডেটা টুল যোগ করা হচ্ছে। আসল শহরের ডেটা না আসা পর্যন্ত তথ্য নমুনা হিসেবেই দেখানো হবে।",
     planTitle: "আমার ব্যবসার পরিকল্পনা",
-    planMessage: "আপনার উত্তর এই ডিভাইসে সংরক্ষিত। পরিকল্পনা তৈরি হলে খরচ, ব্রেক-ইভেন এবং শুরুর পদক্ষেপ এখানে দেখা যাবে।",
+    planMessage: "আপনার উত্তর এই ডিভাইসে সংরক্ষিত। খরচ, ব্রেক-ইভেন ও অর্থের প্রয়োজন হিসাব করতে টাকার পরিকল্পনা খুলুন।",
     navChat: "সাথী",
     navPlan: "আমার পরিকল্পনা",
     navMarket: "বাজার",
@@ -293,6 +293,131 @@ const copy: Record<Language, Translation> = {
     verifyGround: "গ্যাপ একটি ইঙ্গিত, প্রমাণ নয়। জায়গাটি সরেজমিনে যাচাই করুন।",
     mapUnavailable: "ওয়ার্ডের সীমানার ফাইল নেই, তাই মানচিত্রের বদলে ডেটার তালিকা দেখানো হচ্ছে।",
     noCategorySample: "এই শহর ও ব্যবসার ধরনের জন্য নমুনা গণনা নেই।",
+  },
+};
+
+type MoneyCopy = {
+  navLabel: string;
+  title: string;
+  loading: string;
+  selectBusiness: string;
+  sellingPrice: string;
+  unitCost: string;
+  startupCost: string;
+  fixedCosts: string;
+  availableCapital: string;
+  dailyUnits: string;
+  annualRate: string;
+  termMonths: string;
+  calculate: string;
+  margin: string;
+  breakEven: string;
+  monthlyProfit: string;
+  fundingGap: string;
+  emi: string;
+  useRecipe: string;
+  loanOptions: string;
+  wantsLoan: string;
+  noLoan: string;
+  specialCategory: string;
+  women: string;
+  scst: string;
+  findSchemes: string;
+  noSchemes: string;
+  preliminary: string;
+  verify: string;
+  licences: string;
+  landedTitle: string;
+  supplier: string;
+  quantity: string;
+  unitPrice: string;
+  transport: string;
+  charges: string;
+  addSupplier: string;
+  perUnit: string;
+  error: string;
+};
+
+const moneyCopy: Record<Language, MoneyCopy> = {
+  English: {
+    navLabel: "Money", title: "Money, schemes & licences", loading: "Calculating...", selectBusiness: "Business idea", sellingPrice: "Selling price per item",
+    unitCost: "Cost to make one item", startupCost: "One-time setup cost", fixedCosts: "Monthly fixed costs",
+    availableCapital: "Your available money", dailyUnits: "Expected sales per day", annualRate: "Annual interest rate (%)",
+    termMonths: "Loan term (months)", calculate: "Calculate plan", margin: "Margin per item",
+    breakEven: "Break-even items per day", monthlyProfit: "Estimated monthly profit", fundingGap: "Funding gap",
+    emi: "Estimated monthly EMI", useRecipe: "Calculate sample momo recipe", loanOptions: "Loan options",
+    wantsLoan: "Show possible loan schemes", noLoan: "I do not want a loan", specialCategory: "Optional eligibility category",
+    women: "Woman-led", scst: "SC/ST-led", findSchemes: "Find preliminary matches", noSchemes: "No preliminary matches for these choices.",
+    preliminary: "Preliminary matches only, not eligibility or approval. Scheme details are not independently date-verified; terms may change.",
+    verify: "Verify current rules and eligibility with the official portal, lender, or city office.",
+    licences: "Permits and registrations to check", landedTitle: "Compare supplier landed cost",
+    supplier: "Supplier name", quantity: "Quantity", unitPrice: "Price per unit (₹)", transport: "Transport cost (₹)",
+    charges: "Other charges (₹)", addSupplier: "Add supplier quote", perUnit: "Landed cost per unit",
+    error: "Could not load or calculate this information. Please try again.",
+  },
+  Hindi: {
+    navLabel: "पैसा", title: "पैसा, योजनाएं और लाइसेंस", loading: "गणना हो रही है...", selectBusiness: "व्यवसाय का विचार", sellingPrice: "एक वस्तु का बिक्री मूल्य",
+    unitCost: "एक वस्तु बनाने की लागत", startupCost: "एक बार की शुरुआती लागत", fixedCosts: "मासिक स्थिर खर्च",
+    availableCapital: "आपकी उपलब्ध राशि", dailyUnits: "प्रतिदिन अनुमानित बिक्री", annualRate: "वार्षिक ब्याज दर (%)",
+    termMonths: "ऋण अवधि (महीने)", calculate: "योजना की गणना करें", margin: "प्रति वस्तु मार्जिन",
+    breakEven: "प्रतिदिन ब्रेक-ईवन वस्तुएं", monthlyProfit: "अनुमानित मासिक लाभ", fundingGap: "पूंजी की कमी",
+    emi: "अनुमानित मासिक ईएमआई", useRecipe: "नमूना मोमो रेसिपी की लागत निकालें", loanOptions: "ऋण विकल्प",
+    wantsLoan: "संभावित ऋण योजनाएं दिखाएं", noLoan: "मुझे ऋण नहीं चाहिए", specialCategory: "वैकल्पिक पात्रता श्रेणी",
+    women: "महिला-नेतृत्व", scst: "SC/ST-नेतृत्व", findSchemes: "प्रारंभिक मिलान देखें", noSchemes: "इन विकल्पों के लिए कोई प्रारंभिक मिलान नहीं।",
+    preliminary: "ये प्रारंभिक मिलान हैं, पात्रता या मंजूरी नहीं। योजनाओं की तारीख की स्वतंत्र पुष्टि नहीं हुई है; शर्तें बदल सकती हैं।",
+    verify: "आधिकारिक पोर्टल, ऋणदाता या शहर कार्यालय से मौजूदा नियम और पात्रता जांचें।",
+    licences: "जांचने योग्य परमिट और पंजीकरण", landedTitle: "आपूर्तिकर्ता की कुल लागत की तुलना",
+    supplier: "आपूर्तिकर्ता का नाम", quantity: "मात्रा", unitPrice: "प्रति इकाई मूल्य (₹)", transport: "परिवहन लागत (₹)",
+    charges: "अन्य शुल्क (₹)", addSupplier: "आपूर्तिकर्ता का भाव जोड़ें", perUnit: "प्रति इकाई पहुंची लागत",
+    error: "जानकारी लोड या गणना नहीं हो सकी। फिर कोशिश करें।",
+  },
+  Marathi: {
+    navLabel: "पैसे", title: "पैसे, योजना आणि परवाने", loading: "गणना सुरू आहे...", selectBusiness: "व्यवसायाची कल्पना", sellingPrice: "एका वस्तूची विक्री किंमत",
+    unitCost: "एक वस्तू बनवण्याचा खर्च", startupCost: "एकदाचा सुरुवातीचा खर्च", fixedCosts: "मासिक स्थिर खर्च",
+    availableCapital: "तुमच्याकडील उपलब्ध रक्कम", dailyUnits: "दररोज अपेक्षित विक्री", annualRate: "वार्षिक व्याजदर (%)",
+    termMonths: "कर्जाचा कालावधी (महिने)", calculate: "योजनेची गणना करा", margin: "प्रति वस्तू मार्जिन",
+    breakEven: "दररोज ब्रेक-इव्हन वस्तू", monthlyProfit: "अंदाजे मासिक नफा", fundingGap: "भांडवलाची कमतरता",
+    emi: "अंदाजे मासिक EMI", useRecipe: "नमुना मोमो रेसिपीचा खर्च काढा", loanOptions: "कर्जाचे पर्याय",
+    wantsLoan: "संभाव्य कर्ज योजना दाखवा", noLoan: "मला कर्ज नको", specialCategory: "ऐच्छिक पात्रता गट",
+    women: "महिला-नेतृत्व", scst: "SC/ST-नेतृत्व", findSchemes: "प्राथमिक जुळणी शोधा", noSchemes: "या पर्यायांसाठी प्राथमिक जुळणी नाही.",
+    preliminary: "ही प्राथमिक जुळणी आहे; पात्रता किंवा मंजुरी नाही. योजनांच्या तारखांची स्वतंत्र पडताळणी नाही; अटी बदलू शकतात.",
+    verify: "अधिकृत पोर्टल, कर्जदाता किंवा शहर कार्यालयाकडून सध्याचे नियम आणि पात्रता तपासा.",
+    licences: "तपासायचे परवाने आणि नोंदणी", landedTitle: "पुरवठादाराच्या एकूण खर्चाची तुलना",
+    supplier: "पुरवठादाराचे नाव", quantity: "प्रमाण", unitPrice: "प्रति युनिट किंमत (₹)", transport: "वाहतूक खर्च (₹)",
+    charges: "इतर शुल्क (₹)", addSupplier: "पुरवठादाराचा दर जोडा", perUnit: "प्रति युनिट पोहोच खर्च",
+    error: "माहिती लोड किंवा मोजता आली नाही. पुन्हा प्रयत्न करा.",
+  },
+  Gujarati: {
+    navLabel: "પૈસા", title: "પૈસા, યોજનાઓ અને લાઇસન્સ", loading: "ગણતરી થઈ રહી છે...", selectBusiness: "વ્યવસાયનો વિચાર", sellingPrice: "એક વસ્તુની વેચાણ કિંમત",
+    unitCost: "એક વસ્તુ બનાવવાનો ખર્ચ", startupCost: "એક વખતનો શરૂઆતનો ખર્ચ", fixedCosts: "માસિક નિશ્ચિત ખર્ચ",
+    availableCapital: "તમારી ઉપલબ્ધ રકમ", dailyUnits: "દરરોજનું અનુમાનિત વેચાણ", annualRate: "વાર્ષિક વ્યાજ દર (%)",
+    termMonths: "લોનનો સમયગાળો (મહિના)", calculate: "યોજનાની ગણતરી કરો", margin: "દરેક વસ્તુનું માર્જિન",
+    breakEven: "દરરોજની બ્રેક-ઈવન વસ્તુઓ", monthlyProfit: "અંદાજિત માસિક નફો", fundingGap: "ભંડોળની ખોટ",
+    emi: "અંદાજિત માસિક EMI", useRecipe: "નમૂનાની મોમો રેસિપીનો ખર્ચ ગણો", loanOptions: "લોનના વિકલ્પો",
+    wantsLoan: "સંભવિત લોન યોજનાઓ બતાવો", noLoan: "મારે લોન નથી જોઈતી", specialCategory: "વૈકલ્પિક પાત્રતા શ્રેણી",
+    women: "મહિલા-આગેવાની", scst: "SC/ST-આગેવાની", findSchemes: "પ્રાથમિક મેળ શોધો", noSchemes: "આ પસંદગીઓ માટે પ્રાથમિક મેળ નથી.",
+    preliminary: "આ પ્રાથમિક મેળ છે, પાત્રતા કે મંજૂરી નથી. યોજનાઓની તારીખની સ્વતંત્ર ચકાસણી નથી; શરતો બદલાઈ શકે છે.",
+    verify: "સત્તાવાર પોર્ટલ, ધિરાણકર્તા અથવા શહેર કચેરી પાસેથી હાલના નિયમો અને પાત્રતા તપાસો.",
+    licences: "તપાસવાના પરવાના અને નોંધણીઓ", landedTitle: "પુરવઠાકર્તાના કુલ ખર્ચની તુલના",
+    supplier: "પુરવઠાકર્તાનું નામ", quantity: "જથ્થો", unitPrice: "એકમ દીઠ કિંમત (₹)", transport: "પરિવહન ખર્ચ (₹)",
+    charges: "અન્ય ચાર્જ (₹)", addSupplier: "પુરવઠાકર્તાનો ભાવ ઉમેરો", perUnit: "એકમ દીઠ પહોંચેલો ખર્ચ",
+    error: "માહિતી લોડ અથવા ગણતરી થઈ શકી નથી. ફરી પ્રયાસ કરો.",
+  },
+  Bengali: {
+    navLabel: "টাকা", title: "টাকা, প্রকল্প ও লাইসেন্স", loading: "হিসাব হচ্ছে...", selectBusiness: "ব্যবসার ধারণা", sellingPrice: "প্রতি পণ্যের বিক্রয়মূল্য",
+    unitCost: "একটি পণ্য তৈরির খরচ", startupCost: "এককালীন শুরুর খরচ", fixedCosts: "মাসিক স্থায়ী খরচ",
+    availableCapital: "আপনার হাতে থাকা টাকা", dailyUnits: "প্রতিদিনের সম্ভাব্য বিক্রি", annualRate: "বার্ষিক সুদের হার (%)",
+    termMonths: "ঋণের মেয়াদ (মাস)", calculate: "পরিকল্পনার হিসাব করুন", margin: "প্রতি পণ্যের মার্জিন",
+    breakEven: "প্রতিদিনের ব্রেক-ইভেন পণ্য", monthlyProfit: "আনুমানিক মাসিক লাভ", fundingGap: "অর্থের ঘাটতি",
+    emi: "আনুমানিক মাসিক EMI", useRecipe: "নমুনা মোমো রেসিপির খরচ হিসাব করুন", loanOptions: "ঋণের বিকল্প",
+    wantsLoan: "সম্ভাব্য ঋণ প্রকল্প দেখান", noLoan: "আমার ঋণ চাই না", specialCategory: "ঐচ্ছিক যোগ্যতার বিভাগ",
+    women: "নারী-নেতৃত্বাধীন", scst: "SC/ST-নেতৃত্বাধীন", findSchemes: "প্রাথমিক মিল খুঁজুন", noSchemes: "এই পছন্দে কোনো প্রাথমিক মিল নেই।",
+    preliminary: "এগুলি প্রাথমিক মিল, যোগ্যতা বা অনুমোদন নয়। প্রকল্পের তারিখ স্বাধীনভাবে যাচাই করা হয়নি; শর্ত বদলাতে পারে।",
+    verify: "সরকারি পোর্টাল, ঋণদাতা বা শহর দপ্তরে বর্তমান নিয়ম ও যোগ্যতা যাচাই করুন।",
+    licences: "যে অনুমতি ও নিবন্ধন যাচাই করবেন", landedTitle: "সরবরাহকারীর মোট খরচ তুলনা",
+    supplier: "সরবরাহকারীর নাম", quantity: "পরিমাণ", unitPrice: "প্রতি এককের দাম (₹)", transport: "পরিবহন খরচ (₹)",
+    charges: "অন্যান্য খরচ (₹)", addSupplier: "সরবরাহকারীর দর যোগ করুন", perUnit: "প্রতি এককের পৌঁছানোর খরচ",
+    error: "তথ্য লোড বা হিসাব করা যায়নি। আবার চেষ্টা করুন।",
   },
 };
 
@@ -338,6 +463,75 @@ type VyaparState = {
     estimated_monthly_profit: number | null;
     break_even_units_per_day: number | null;
   };
+};
+
+type RecipeIngredient = {
+  name: string;
+  weight_g: number;
+  mandi_price_per_quintal?: number;
+  retail_price_per_kg?: number;
+  fixed_cost?: number;
+};
+
+type BusinessTemplate = {
+  id: string;
+  name: string;
+  model: "mobile" | "fixed" | "home";
+  selling_price: number;
+  startup_cost: number;
+  fixed_monthly_cost?: number;
+  unit_cost: number | null;
+  unit_cost_is_sample: boolean;
+  recipe?: RecipeIngredient[];
+};
+
+type MoneyInputs = {
+  businessId: string;
+  sellingPrice: string;
+  unitCost: string;
+  startupCost: string;
+  fixedCosts: string;
+  availableCapital: string;
+  dailyUnits: string;
+  annualRate: string;
+  termMonths: string;
+};
+
+type FinanceResult = {
+  margin_per_unit: number;
+  break_even_units_per_day: number | null;
+  estimated_monthly_profit: number;
+  funding_gap: number;
+  loan_required: boolean;
+  monthly_emi: number;
+};
+
+type SchemeMatch = {
+  id: string;
+  name: string;
+  maximum_amount: number;
+  official_url: string | null;
+  documents: string[];
+  note: string;
+  last_checked: string | null;
+  match_percent: number;
+  match_label: string;
+  reasons: string[];
+  verify_before_applying: boolean;
+};
+
+type LicenceItem = {
+  id: string;
+  name: string;
+  where: string;
+  official_url: string | null;
+  note: string;
+  required: boolean;
+};
+
+type SupplierQuote = {
+  supplier: string;
+  landedCost: number;
 };
 
 type ChatResponse = {
@@ -461,7 +655,38 @@ export default function VyaparSaathiCityApp() {
   const [weatherResult, setWeatherResult] = useState<WeatherResult | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState("");
+  const [businessTemplates, setBusinessTemplates] = useState<BusinessTemplate[]>([]);
+  const [financeInputs, setFinanceInputs] = useState<MoneyInputs>({
+    businessId: "",
+    sellingPrice: "",
+    unitCost: "",
+    startupCost: "",
+    fixedCosts: "",
+    availableCapital: "",
+    dailyUnits: "",
+    annualRate: "12",
+    termMonths: "12",
+  });
+  const [financeResult, setFinanceResult] = useState<FinanceResult | null>(null);
+  const [moneyError, setMoneyError] = useState("");
+  const [recipeCosts, setRecipeCosts] = useState<Array<{ name: string; cost: number }> | null>(null);
+  const [specialCategories, setSpecialCategories] = useState<string[]>([]);
+  const [schemeMatches, setSchemeMatches] = useState<SchemeMatch[]>([]);
+  const [schemeSearchDone, setSchemeSearchDone] = useState(false);
+  const [licences, setLicences] = useState<LicenceItem[]>([]);
+  const [completedLicences, setCompletedLicences] = useState<Record<string, boolean>>({});
+  const [supplierInputs, setSupplierInputs] = useState({
+    supplier: "",
+    quantity: "1",
+    unitPrice: "",
+    transport: "0",
+    charges: "0",
+  });
+  const [supplierQuotes, setSupplierQuotes] = useState<SupplierQuote[]>([]);
+  const [moneyLoading, setMoneyLoading] = useState(false);
   const t = copy[language];
+  const money = moneyCopy[language];
+  const wantsLoan = vyaparState.user_profile.loan_needed;
 
   useEffect(() => {
     const saved = window.localStorage.getItem(storageKey);
@@ -472,6 +697,10 @@ export default function VyaparSaathiCityApp() {
           activeScreen?: Screen;
           messages?: ChatMessage[];
           vyaparState?: Partial<VyaparState>;
+          financeInputs?: MoneyInputs;
+          financeResult?: FinanceResult | null;
+          supplierQuotes?: SupplierQuote[];
+          completedLicences?: Record<string, boolean>;
         };
         const savedLanguage = parsed.language && isLanguage(parsed.language) ? parsed.language : "English";
         const initial = createInitialState(savedLanguage);
@@ -502,9 +731,13 @@ export default function VyaparSaathiCityApp() {
           },
         });
         if (parsed.messages?.length) setMessages(parsed.messages);
-        if (parsed.activeScreen && ["home", "advisor", "market", "time", "plan"].includes(parsed.activeScreen)) {
+        if (parsed.activeScreen && ["home", "advisor", "market", "time", "money", "plan"].includes(parsed.activeScreen)) {
           setActiveScreen(parsed.activeScreen);
         }
+        if (parsed.financeInputs) setFinanceInputs(parsed.financeInputs);
+        if (parsed.financeResult) setFinanceResult(parsed.financeResult);
+        if (parsed.supplierQuotes) setSupplierQuotes(parsed.supplierQuotes);
+        if (parsed.completedLicences) setCompletedLicences(parsed.completedLicences);
       } catch {
         window.localStorage.removeItem(storageKey);
       }
@@ -530,8 +763,54 @@ export default function VyaparSaathiCityApp() {
       activeScreen,
       messages,
       vyaparState,
+      financeInputs,
+      financeResult,
+      supplierQuotes,
+      completedLicences,
     }));
-  }, [activeScreen, isHydrated, language, messages, vyaparState]);
+  }, [activeScreen, completedLicences, financeInputs, financeResult, isHydrated, language, messages, supplierQuotes, vyaparState]);
+
+  useEffect(() => {
+    if (!isHydrated || activeScreen !== "money" || businessTemplates.length > 0) return;
+    let active = true;
+    axios.get<{ business_templates: BusinessTemplate[] }>(`${apiBaseUrl}/api/city/business-templates`)
+      .then((response) => {
+        if (!active) return;
+        const templates = response.data.business_templates;
+        setBusinessTemplates(templates);
+        const businessName = vyaparState.business_context.business_name?.toLowerCase();
+        const matchingTemplate = templates.find((template) =>
+          template.id === vyaparState.business_context.category ||
+          template.name.toLowerCase() === businessName,
+        );
+        if (matchingTemplate && !financeInputs.businessId) {
+          setFinanceInputs((previous) => ({
+            ...previous,
+            businessId: matchingTemplate.id,
+            sellingPrice: previous.sellingPrice || String(matchingTemplate.selling_price),
+            unitCost: previous.unitCost || (matchingTemplate.unit_cost === null ? "" : String(matchingTemplate.unit_cost)),
+            startupCost: previous.startupCost || String(matchingTemplate.startup_cost),
+            fixedCosts: previous.fixedCosts || (matchingTemplate.fixed_monthly_cost === undefined ? "" : String(matchingTemplate.fixed_monthly_cost)),
+            availableCapital: previous.availableCapital || String(vyaparState.user_profile.available_capital ?? ""),
+          }));
+        }
+      })
+      .catch(() => {
+        if (active) setMoneyError(money.error);
+      });
+    return () => {
+      active = false;
+    };
+  }, [
+    activeScreen,
+    businessTemplates.length,
+    financeInputs.businessId,
+    isHydrated,
+    money.error,
+    vyaparState.business_context.business_name,
+    vyaparState.business_context.category,
+    vyaparState.user_profile.available_capital,
+  ]);
 
   useEffect(() => {
     if (activeScreen !== "market" && activeScreen !== "time") return;
@@ -712,6 +991,187 @@ export default function VyaparSaathiCityApp() {
     );
   };
 
+  const formatRupees = (amount: number) => new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 2,
+  }).format(amount);
+
+  const chooseBusinessTemplate = (businessId: string) => {
+    const template = businessTemplates.find((item) => item.id === businessId);
+    setFinanceInputs((previous) => ({
+      ...previous,
+      businessId,
+      sellingPrice: template ? String(template.selling_price) : "",
+      unitCost: template?.unit_cost === null || !template ? "" : String(template.unit_cost),
+      startupCost: template ? String(template.startup_cost) : "",
+      fixedCosts: template?.fixed_monthly_cost === undefined ? "" : String(template.fixed_monthly_cost),
+      availableCapital: String(vyaparState.user_profile.available_capital ?? ""),
+    }));
+    setFinanceResult(null);
+    setSchemeMatches([]);
+    setSchemeSearchDone(false);
+    setLicences([]);
+    setRecipeCosts(null);
+    setMoneyError("");
+  };
+
+  const calculateSampleRecipe = async () => {
+    const template = businessTemplates.find((item) => item.id === financeInputs.businessId);
+    if (!template?.recipe) return;
+    setMoneyLoading(true);
+    setMoneyError("");
+    try {
+      const response = await axios.post<{ unit_cost: number; items: Array<{ name: string; cost: number }> }>(
+        `${apiBaseUrl}/api/city/unit-cost`,
+        { ingredients: template.recipe },
+      );
+      setFinanceInputs((previous) => ({ ...previous, unitCost: String(response.data.unit_cost) }));
+      setRecipeCosts(response.data.items);
+    } catch {
+      setMoneyError(money.error);
+    } finally {
+      setMoneyLoading(false);
+    }
+  };
+
+  const calculateMoneyPlan = async () => {
+    const values = {
+      selling_price: Number(financeInputs.sellingPrice),
+      unit_cost: Number(financeInputs.unitCost),
+      fixed_monthly_cost: Number(financeInputs.fixedCosts),
+      startup_cost: Number(financeInputs.startupCost),
+      available_capital: Number(financeInputs.availableCapital),
+      daily_units: Number(financeInputs.dailyUnits || 0),
+      annual_interest_rate: Number(financeInputs.annualRate),
+      loan_term_months: Number(financeInputs.termMonths),
+    };
+    const requiredFields = [
+      financeInputs.sellingPrice,
+      financeInputs.unitCost,
+      financeInputs.startupCost,
+      financeInputs.fixedCosts,
+      financeInputs.availableCapital,
+      financeInputs.annualRate,
+      financeInputs.termMonths,
+    ];
+    if (!financeInputs.businessId || requiredFields.some((value) => !value.trim()) ||
+      Object.values(values).some((value) => !Number.isFinite(value) || value < 0)) {
+      setMoneyError(money.error);
+      return;
+    }
+    setMoneyLoading(true);
+    setMoneyError("");
+    try {
+      const response = await axios.post<FinanceResult>(`${apiBaseUrl}/api/city/finance`, values);
+      const result = response.data;
+      setFinanceResult(result);
+      const template = businessTemplates.find((item) => item.id === financeInputs.businessId);
+      setVyaparState((previous) => ({
+        ...previous,
+        user_profile: { ...previous.user_profile, available_capital: values.available_capital },
+        business_context: {
+          ...previous.business_context,
+          category: financeInputs.businessId,
+          business_name: template?.name ?? previous.business_context.business_name,
+          additional_details: {
+            ...previous.business_context.additional_details,
+            business_model: template?.model,
+          },
+        },
+        financial_evaluation: {
+          ...previous.financial_evaluation,
+          total_project_cost: values.startup_cost + values.fixed_monthly_cost,
+          startup_cost: values.startup_cost,
+          unit_cost: values.unit_cost,
+          selling_price: values.selling_price,
+          fixed_monthly_cost: values.fixed_monthly_cost,
+          expected_daily_units: values.daily_units,
+          funding_gap: result.funding_gap,
+          loan_required: result.loan_required,
+          estimated_monthly_emi: result.monthly_emi,
+          estimated_monthly_profit: result.estimated_monthly_profit,
+          break_even_units_per_day: result.break_even_units_per_day,
+        },
+      }));
+      setSchemeMatches([]);
+      setSchemeSearchDone(false);
+    } catch {
+      setMoneyError(money.error);
+    } finally {
+      setMoneyLoading(false);
+    }
+  };
+
+  const findSchemeMatches = async () => {
+    const template = businessTemplates.find((item) => item.id === financeInputs.businessId);
+    if (!template || !financeResult || wantsLoan !== true) return;
+    setMoneyLoading(true);
+    setMoneyError("");
+    try {
+      const response = await axios.post<{ schemes: SchemeMatch[] }>(`${apiBaseUrl}/api/city/schemes`, {
+        business_model: template.model,
+        funding_gap: financeResult.funding_gap,
+        wants_loan: true,
+        special_categories: specialCategories,
+      });
+      setSchemeMatches(response.data.schemes);
+      setSchemeSearchDone(true);
+    } catch {
+      setMoneyError(money.error);
+    } finally {
+      setMoneyLoading(false);
+    }
+  };
+
+  const loadLicenceChecklist = async () => {
+    const template = businessTemplates.find((item) => item.id === financeInputs.businessId);
+    if (!template) return;
+    setMoneyLoading(true);
+    setMoneyError("");
+    try {
+      const response = await axios.post<{ licences: LicenceItem[] }>(`${apiBaseUrl}/api/city/licences`, {
+        business_id: template.id,
+        business_model: template.model,
+      });
+      setLicences(response.data.licences);
+    } catch {
+      setMoneyError(money.error);
+    } finally {
+      setMoneyLoading(false);
+    }
+  };
+
+  const addSupplierQuote = async () => {
+    const quantity = Number(supplierInputs.quantity);
+    const unitPrice = Number(supplierInputs.unitPrice);
+    const transport = Number(supplierInputs.transport);
+    const charges = Number(supplierInputs.charges);
+    if (!supplierInputs.supplier.trim() || !Number.isFinite(quantity) || quantity <= 0 ||
+      !Number.isFinite(unitPrice) || unitPrice < 0 || !Number.isFinite(transport) || transport < 0 ||
+      !Number.isFinite(charges) || charges < 0) {
+      setMoneyError(money.error);
+      return;
+    }
+    setMoneyLoading(true);
+    setMoneyError("");
+    try {
+      const response = await axios.post<{ landed_cost_per_unit: number }>(
+        `${apiBaseUrl}/api/city/landed-cost`,
+        { unit_price: unitPrice, quantity, transport_cost: transport, other_charges: charges },
+      );
+      setSupplierQuotes((previous) => [
+        ...previous,
+        { supplier: supplierInputs.supplier.trim(), landedCost: response.data.landed_cost_per_unit },
+      ].sort((a, b) => a.landedCost - b.landedCost));
+      setSupplierInputs({ supplier: "", quantity: "1", unitPrice: "", transport: "0", charges: "0" });
+    } catch {
+      setMoneyError(money.error);
+    } finally {
+      setMoneyLoading(false);
+    }
+  };
+
   const TopAppBar = ({ title = "VyaparSaathi City" }: { title?: string }) => (
     <header className="fixed top-0 left-0 right-0 z-50 mx-auto flex h-16 max-w-md items-center justify-between border-b border-outline-variant bg-surface px-4">
       <div className="flex items-center gap-3">
@@ -751,6 +1211,7 @@ export default function VyaparSaathiCityApp() {
         ["advisor", "forum", t.navChat],
         ["market", "map", t.navMarket],
         ["time", "schedule", t.timeTitle],
+        ["money", "payments", money.navLabel],
         ["plan", "assignment", t.navPlan],
       ] as const).map(([screen, icon, label]) => (
         <button
@@ -1013,6 +1474,283 @@ export default function VyaparSaathiCityApp() {
         </div>
       )}
 
+      {activeScreen === "money" && (
+        <div className="min-h-screen px-5 pb-28 pt-24">
+          <TopAppBar title={money.title} />
+          <h1 className="text-2xl font-bold">{money.title}</h1>
+          <p className="mt-2 text-sm text-outline">{t.sampleNotice}</p>
+          {moneyError && <p className="mt-3 rounded-xl bg-rose-50 p-3 text-sm text-rose-800" role="alert">{moneyError}</p>}
+
+          <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+            <label htmlFor="money-business" className="block text-sm font-bold">{money.selectBusiness}</label>
+            <select
+              id="money-business"
+              value={financeInputs.businessId}
+              onChange={(event) => chooseBusinessTemplate(event.target.value)}
+              className="mt-2 w-full rounded-xl border border-outline-variant bg-white px-3 py-2.5"
+            >
+              <option value="">{t.category}</option>
+              {businessTemplates.map((template) => (
+                <option key={template.id} value={template.id}>{template.name}</option>
+              ))}
+            </select>
+
+            {businessTemplates.length === 0 && !moneyError && (
+              <p className="mt-3 text-sm text-outline" role="status">{money.loading}</p>
+            )}
+            {businessTemplates.find((template) => template.id === financeInputs.businessId)?.recipe && (
+              <div className="mt-3">
+                <button
+                  type="button"
+                  onClick={() => void calculateSampleRecipe()}
+                  disabled={moneyLoading}
+                  className="rounded-xl border border-primary px-3 py-2 text-sm font-semibold text-primary disabled:opacity-50"
+                >
+                  {money.useRecipe}
+                </button>
+                {recipeCosts && (
+                  <ul className="mt-2 space-y-1 text-xs text-outline">
+                    {recipeCosts.map((item) => (
+                      <li key={item.name} className="flex justify-between gap-2">
+                        <span>{item.name}</span><span>{formatRupees(item.cost)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {([
+                ["sellingPrice", money.sellingPrice],
+                ["unitCost", money.unitCost],
+                ["startupCost", money.startupCost],
+                ["fixedCosts", money.fixedCosts],
+                ["availableCapital", money.availableCapital],
+                ["dailyUnits", money.dailyUnits],
+                ["annualRate", money.annualRate],
+                ["termMonths", money.termMonths],
+              ] as const).map(([field, label]) => (
+                <label key={field} className="text-xs font-semibold text-outline">
+                  {label}
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    value={financeInputs[field]}
+                    onChange={(event) => setFinanceInputs((previous) => ({
+                      ...previous,
+                      [field]: event.target.value,
+                    }))}
+                    className="mt-1 w-full rounded-xl border border-outline-variant bg-white px-3 py-2.5 text-sm font-normal text-on-surface"
+                  />
+                </label>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => void calculateMoneyPlan()}
+              disabled={moneyLoading || !financeInputs.businessId}
+              className="mt-4 w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white disabled:opacity-50"
+            >
+              {moneyLoading ? money.loading : money.calculate}
+            </button>
+          </section>
+
+          {financeResult && (
+            <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+              <h2 className="font-bold">{money.title}</h2>
+              <dl className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-outline">{money.margin}</dt>
+                  <dd className="mt-1 font-bold">{formatRupees(financeResult.margin_per_unit)}</dd>
+                </div>
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-outline">{money.breakEven}</dt>
+                  <dd className="mt-1 font-bold">{financeResult.break_even_units_per_day ?? "—"}</dd>
+                </div>
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-outline">{money.monthlyProfit}</dt>
+                  <dd className="mt-1 font-bold">{formatRupees(financeResult.estimated_monthly_profit)}</dd>
+                </div>
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-outline">{money.fundingGap}</dt>
+                  <dd className="mt-1 font-bold">{formatRupees(financeResult.funding_gap)}</dd>
+                </div>
+                <div className="col-span-2 rounded-xl bg-primary/5 p-3">
+                  <dt className="text-xs text-outline">{money.emi}</dt>
+                  <dd className="mt-1 font-bold">{formatRupees(financeResult.monthly_emi)}</dd>
+                </div>
+              </dl>
+            </section>
+          )}
+
+          <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+            <h2 className="font-bold">{money.loanOptions}</h2>
+            <div className="mt-3 grid grid-cols-1 gap-2">
+              <button
+                type="button"
+                aria-pressed={wantsLoan === true}
+                onClick={() => {
+                  setSchemeMatches([]);
+                  setSchemeSearchDone(false);
+                  setVyaparState((previous) => ({
+                    ...previous,
+                    user_profile: { ...previous.user_profile, loan_needed: true },
+                  }));
+                }}
+                className={`rounded-xl border px-3 py-2 text-left text-sm ${wantsLoan === true ? "border-primary bg-primary/5 text-primary" : "border-outline-variant"}`}
+              >{money.wantsLoan}</button>
+              <button
+                type="button"
+                aria-pressed={wantsLoan === false}
+                onClick={() => {
+                  setSchemeMatches([]);
+                  setSchemeSearchDone(false);
+                  setVyaparState((previous) => ({
+                    ...previous,
+                    user_profile: { ...previous.user_profile, loan_needed: false },
+                  }));
+                }}
+                className={`rounded-xl border px-3 py-2 text-left text-sm ${wantsLoan === false ? "border-primary bg-primary/5 text-primary" : "border-outline-variant"}`}
+              >{money.noLoan}</button>
+            </div>
+            {wantsLoan && (
+              <>
+                <fieldset className="mt-3">
+                  <legend className="text-xs font-semibold text-outline">{money.specialCategory}</legend>
+                  <div className="mt-2 flex flex-wrap gap-3 text-sm">
+                    {([["women", money.women], ["sc_st", money.scst]] as const).map(([category, label]) => (
+                      <label key={category} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={specialCategories.includes(category)}
+                          onChange={(event) => setSpecialCategories((previous) =>
+                            event.target.checked
+                              ? [...previous, category]
+                              : previous.filter((item) => item !== category),
+                          )}
+                        />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                <button
+                  type="button"
+                  onClick={() => void findSchemeMatches()}
+                  disabled={moneyLoading || !financeResult}
+                  className="mt-3 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+                >{money.findSchemes}</button>
+                <p className="mt-3 text-xs leading-relaxed text-outline">{money.preliminary} {money.verify}</p>
+                {schemeSearchDone && schemeMatches.length === 0 && financeResult && (
+                  <p className="mt-3 text-sm text-outline">{money.noSchemes}</p>
+                )}
+                <div className="mt-3 space-y-3">
+                  {schemeMatches.map((scheme) => (
+                    <article key={scheme.id} className="rounded-xl border border-outline-variant/50 p-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="font-bold">{scheme.name}</h3>
+                        <span className="shrink-0 rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-900">
+                          {scheme.match_label} · {scheme.match_percent}%
+                        </span>
+                      </div>
+                      <p className="mt-2 text-xs text-outline">{scheme.note}</p>
+                      <ul className="mt-2 list-disc pl-5 text-xs text-outline">
+                        {scheme.reasons.map((reason) => <li key={reason}>{reason}</li>)}
+                        {scheme.documents.map((document) => <li key={document}>{document}</li>)}
+                      </ul>
+                      {scheme.official_url && (
+                        <a href={scheme.official_url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs font-semibold text-primary underline">
+                          {scheme.name} · {money.verify}
+                        </a>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              </>
+            )}
+          </section>
+
+          <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+            <h2 className="font-bold">{money.licences}</h2>
+            <p className="mt-1 text-xs text-outline">{money.verify}</p>
+            <button
+              type="button"
+              onClick={() => void loadLicenceChecklist()}
+              disabled={moneyLoading || !financeInputs.businessId}
+              className="mt-3 rounded-xl border border-primary px-3 py-2 text-sm font-semibold text-primary disabled:opacity-50"
+            >{money.licences}</button>
+            <ul className="mt-3 space-y-3">
+              {licences.map((licence) => (
+                <li key={licence.id} className="rounded-xl bg-surface-container-low p-3">
+                  <label className="flex items-start gap-2 text-sm font-semibold">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(completedLicences[licence.id])}
+                      onChange={(event) => setCompletedLicences((previous) => ({
+                        ...previous,
+                        [licence.id]: event.target.checked,
+                      }))}
+                    />
+                    <span>{licence.name}</span>
+                  </label>
+                  <p className="ml-6 mt-1 text-xs text-outline">{licence.where}. {licence.note}</p>
+                  {licence.official_url && (
+                    <a href={licence.official_url} target="_blank" rel="noopener noreferrer" className="ml-6 mt-1 inline-block text-xs font-semibold text-primary underline">
+                      {money.verify}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+            <h2 className="font-bold">{money.landedTitle}</h2>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              {([
+                ["supplier", money.supplier],
+                ["quantity", money.quantity],
+                ["unitPrice", money.unitPrice],
+                ["transport", money.transport],
+                ["charges", money.charges],
+              ] as const).map(([field, label]) => (
+                <label key={field} className={`text-xs font-semibold text-outline ${field === "supplier" ? "col-span-2" : ""}`}>
+                  {label}
+                  <input
+                    type={field === "supplier" ? "text" : "number"}
+                    min={field === "quantity" ? "0.001" : "0"}
+                    step="any"
+                    value={supplierInputs[field]}
+                    onChange={(event) => setSupplierInputs((previous) => ({
+                      ...previous,
+                      [field]: event.target.value,
+                    }))}
+                    className="mt-1 w-full rounded-xl border border-outline-variant bg-white px-3 py-2.5 text-sm font-normal text-on-surface"
+                  />
+                </label>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => void addSupplierQuote()}
+              disabled={moneyLoading}
+              className="mt-3 rounded-xl border border-primary px-3 py-2 text-sm font-semibold text-primary disabled:opacity-50"
+            >{money.addSupplier}</button>
+            <ul className="mt-3 space-y-2">
+              {supplierQuotes.map((quote, index) => (
+                <li key={`${quote.supplier}-${index}`} className="flex justify-between gap-3 rounded-xl bg-surface-container-low p-3 text-sm">
+                  <span>{quote.supplier}</span>
+                  <span className="text-right font-bold">{formatRupees(quote.landedCost)} / {money.perUnit}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+          <BottomNav />
+        </div>
+      )}
+
       {activeScreen === "plan" && (
         <div className="min-h-screen px-5 pb-28 pt-24">
           <TopAppBar title={t.planTitle} />
@@ -1027,7 +1765,28 @@ export default function VyaparSaathiCityApp() {
                 <dt>{t.profile}</dt><dd className="font-semibold">{progress.percent}%</dd>
               </div>
             </dl>
+            <button
+              type="button"
+              onClick={() => setActiveScreen("money")}
+              className="mt-4 w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white"
+            >{money.title}</button>
           </section>
+          {financeResult && (
+            <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+              <h2 className="font-bold">{money.title}</h2>
+              <dl className="mt-3 space-y-3 text-sm">
+                <div className="flex justify-between gap-3">
+                  <dt>{money.fundingGap}</dt><dd className="font-bold">{formatRupees(financeResult.funding_gap)}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt>{money.monthlyProfit}</dt><dd className="font-bold">{formatRupees(financeResult.estimated_monthly_profit)}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt>{money.breakEven}</dt><dd className="font-bold">{financeResult.break_even_units_per_day ?? "—"}</dd>
+                </div>
+              </dl>
+            </section>
+          )}
           <p className="mt-4 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">{t.sampleNotice}</p>
           <BottomNav />
         </div>

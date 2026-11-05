@@ -12,12 +12,15 @@ from app.core.finance import calculate_mosje_micro_finance
 from app.core.city_data import load_city_market_data
 from app.core.city_planner import (
     calculate_financial_plan,
+    calculate_landed_cost,
     calculate_market_gap,
     calculate_opportunity_score,
+    calculate_unit_cost,
     estimate_daily_sales,
     find_best_sales_window,
     weather_advice,
 )
+from app.core.city_guidance import licence_checklist, match_city_schemes
 from app.core.agent import process_chat_message, translate_chat_history
 
 app = FastAPI(title="VyaparSaathi AI API")
@@ -65,6 +68,32 @@ class FootfallForecastRequest(BaseModel):
     minutes_counted: float = Field(gt=0)
     selling_hours: float = Field(ge=0)
     buying_rate: float = Field(default=0.015, ge=0, le=1)
+
+class SchemeMatcherRequest(BaseModel):
+    business_model: Literal["mobile", "fixed", "home"]
+    funding_gap: float = Field(ge=0)
+    wants_loan: bool
+    special_categories: list[Literal["women", "sc_st"]] = Field(default_factory=list)
+
+class LicenceChecklistRequest(BaseModel):
+    business_id: str
+    business_model: Literal["mobile", "fixed", "home"]
+
+class LandedCostRequest(BaseModel):
+    unit_price: float = Field(ge=0)
+    quantity: float = Field(gt=0)
+    transport_cost: float = Field(default=0, ge=0)
+    other_charges: float = Field(default=0, ge=0)
+
+class IngredientCostRequest(BaseModel):
+    name: str
+    weight_g: float = Field(ge=0)
+    mandi_price_per_quintal: float | None = Field(default=None, ge=0)
+    retail_price_per_kg: float | None = Field(default=None, ge=0)
+    fixed_cost: float | None = Field(default=None, ge=0)
+
+class UnitCostRequest(BaseModel):
+    ingredients: list[IngredientCostRequest]
 
 # Inside main.py
 class ChatRequest(BaseModel):
@@ -142,6 +171,45 @@ async def city_footfall_forecast(req: FootfallForecastRequest):
             req.selling_hours,
             req.buying_rate,
         )
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+@app.post("/api/city/unit-cost")
+async def city_unit_cost(req: UnitCostRequest):
+    try:
+        ingredients = [item.model_dump(exclude_none=True) for item in req.ingredients]
+        return calculate_unit_cost(ingredients)
+    except (TypeError, ValueError, KeyError) as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+@app.post("/api/city/landed-cost")
+async def city_landed_cost(req: LandedCostRequest):
+    try:
+        return {"landed_cost_per_unit": calculate_landed_cost(
+            req.unit_price,
+            req.quantity,
+            req.transport_cost,
+            req.other_charges,
+        )}
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+@app.post("/api/city/schemes")
+async def city_scheme_matches(req: SchemeMatcherRequest):
+    try:
+        return {"schemes": match_city_schemes(
+            business_model=req.business_model,
+            funding_gap=req.funding_gap,
+            wants_loan=req.wants_loan,
+            special_categories=req.special_categories,
+        )}
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+@app.post("/api/city/licences")
+async def city_licences(req: LicenceChecklistRequest):
+    try:
+        return {"licences": licence_checklist(req.business_id, req.business_model)}
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
 

@@ -6,8 +6,16 @@
     "busy_period": "evening",
     "selling_price": 60,
     "startup_cost": 42000,
+    "fixed_monthly_cost": 9000,
     "unit_cost": 16.58,
     "unit_cost_is_sample": true,
+    "recipe": [
+      {"name": "Maida", "weight_g": 70, "retail_price_per_kg": 40},
+      {"name": "Cabbage", "weight_g": 60, "mandi_price_per_quintal": 1400},
+      {"name": "Onion", "weight_g": 25, "mandi_price_per_quintal": 3150},
+      {"name": "Carrot", "weight_g": 15, "mandi_price_per_quintal": 3400},
+      {"name": "Oil, spices, chutney, gas and plate", "weight_g": 0, "fixed_cost": 11}
+    ],
     "data_confidence": "Sample data"
   },
   {

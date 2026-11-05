@@ -1,0 +1,68 @@
+[
+  {
+    "id": "pm_svanidhi",
+    "name": "PM SVANidhi",
+    "business_models": ["mobile"],
+    "maximum_amount": 15000,
+    "programme_amounts": [15000, 25000, 50000],
+    "commonly_used": true,
+    "required_categories": [],
+    "official_url": "https://pmsvanidhi.mohua.gov.in/",
+    "documents": ["Vending certificate or Letter of Recommendation; confirm with the city office"],
+    "note": "The guide describes staged loan tranches. The first tranche is used for this preliminary comparison.",
+    "last_checked": null
+  },
+  {
+    "id": "mudra_shishu",
+    "name": "PMMY / MUDRA Shishu",
+    "business_models": ["mobile", "fixed", "home"],
+    "maximum_amount": 50000,
+    "programme_amounts": [50000],
+    "commonly_used": true,
+    "required_categories": [],
+    "official_url": "https://www.mudra.org.in/",
+    "documents": [],
+    "note": "Shishu is described in the guide as up to ₹50,000. Confirm current terms with the official portal and lender.",
+    "last_checked": null
+  },
+  {
+    "id": "mudra_kishore",
+    "name": "PMMY / MUDRA Kishore",
+    "business_models": ["mobile", "fixed", "home"],
+    "maximum_amount": 500000,
+    "programme_amounts": [500000],
+    "commonly_used": true,
+    "required_categories": [],
+    "official_url": "https://www.mudra.org.in/",
+    "documents": [],
+    "note": "Kishore is described in the guide as above ₹50,000 and up to ₹5 lakh. Confirm current terms with the official portal and lender.",
+    "last_checked": null
+  },
+  {
+    "id": "pmegp",
+    "name": "PMEGP",
+    "business_models": ["mobile", "fixed", "home"],
+    "maximum_amount": 2000000,
+    "programme_amounts": [2000000, 5000000],
+    "commonly_used": true,
+    "required_categories": [],
+    "official_url": "https://www.kviconline.gov.in/pmegpeportal/",
+    "documents": [],
+    "note": "The guide lists service and manufacturing project-cost ceilings separately. Confirm the current category limit and terms on the official portal.",
+    "last_checked": null
+  },
+  {
+    "id": "stand_up_india",
+    "name": "Stand-Up India",
+    "business_models": ["mobile", "fixed", "home"],
+    "minimum_amount": 1000000,
+    "maximum_amount": 10000000,
+    "programme_amounts": [1000000, 10000000],
+    "commonly_used": false,
+    "required_categories": ["women", "sc_st"],
+    "official_url": "https://www.standupmitra.in/",
+    "documents": [],
+    "note": "For a new enterprise led by a woman or SC/ST entrepreneur. Final conditions and sanction are determined by the lender.",
+    "last_checked": null
+  }
+]
