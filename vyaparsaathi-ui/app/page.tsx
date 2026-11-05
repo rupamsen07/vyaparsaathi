@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 
 const languageOptions = [
   { code: "English", label: "English" },
@@ -27,6 +28,11 @@ type Translation = {
   profile: string;
   answers: string;
   type: string;
+  voiceButton: string;
+  voiceStop: string;
+  voiceUnsupported: string;
+  voicePermission: string;
+  voiceListening: string;
   connection: string;
   rateLimit: string;
   translationError: string;
@@ -75,6 +81,11 @@ const copy: Record<Language, Translation> = {
     profile: "Your planning profile",
     answers: "{complete}/5 key answers",
     type: "Type a message...",
+    voiceButton: "Speak",
+    voiceStop: "Stop voice input",
+    voiceUnsupported: "Voice input is not supported in this browser.",
+    voicePermission: "Microphone access is unavailable. Check your browser permission.",
+    voiceListening: "Listening...",
     connection: "Could not reach the advisor. Please try again.",
     rateLimit: "The advisor is busy right now. Please try again in a moment.",
     translationError: "Could not translate the conversation. Your previous language was restored.",
@@ -121,6 +132,11 @@ const copy: Record<Language, Translation> = {
     profile: "आपकी योजना प्रोफ़ाइल",
     answers: "{complete}/5 ज़रूरी जवाब",
     type: "संदेश लिखें...",
+    voiceButton: "बोलें",
+    voiceStop: "बोलना रोकें",
+    voiceUnsupported: "इस ब्राउज़र में आवाज़ से लिखना उपलब्ध नहीं है।",
+    voicePermission: "माइक्रोफ़ोन उपलब्ध नहीं है। ब्राउज़र की अनुमति जांचें।",
+    voiceListening: "सुन रहा है...",
     connection: "सलाहकार से संपर्क नहीं हो पाया। फिर कोशिश करें।",
     rateLimit: "सलाहकार अभी व्यस्त है। कृपया थोड़ी देर बाद कोशिश करें।",
     translationError: "बातचीत का अनुवाद नहीं हो पाया। पिछली भाषा बहाल कर दी गई है।",
@@ -167,6 +183,11 @@ const copy: Record<Language, Translation> = {
     profile: "तुमची नियोजन प्रोफाइल",
     answers: "{complete}/5 महत्त्वाची उत्तरे",
     type: "संदेश लिहा...",
+    voiceButton: "बोला",
+    voiceStop: "बोलणे थांबवा",
+    voiceUnsupported: "या ब्राउझरमध्ये आवाजाने लिहिणे उपलब्ध नाही.",
+    voicePermission: "मायक्रोफोन उपलब्ध नाही. ब्राउझरची परवानगी तपासा.",
+    voiceListening: "ऐकत आहे...",
     connection: "सल्लागाराशी संपर्क होऊ शकला नाही. पुन्हा प्रयत्न करा.",
     rateLimit: "सल्लागार सध्या व्यस्त आहे. थोड्या वेळाने पुन्हा प्रयत्न करा.",
     translationError: "संभाषणाचा अनुवाद होऊ शकला नाही. मागील भाषा पुन्हा सुरू केली आहे.",
@@ -213,6 +234,11 @@ const copy: Record<Language, Translation> = {
     profile: "તમારી આયોજન પ્રોફાઇલ",
     answers: "{complete}/5 મહત્ત્વના જવાબો",
     type: "સંદેશ લખો...",
+    voiceButton: "બોલો",
+    voiceStop: "બોલવાનું બંધ કરો",
+    voiceUnsupported: "આ બ્રાઉઝરમાં અવાજથી લખવાની સુવિધા નથી.",
+    voicePermission: "માઇક્રોફોન ઉપલબ્ધ નથી. બ્રાઉઝરની મંજૂરી તપાસો.",
+    voiceListening: "સાંભળી રહ્યું છે...",
     connection: "સલાહકારનો સંપર્ક થઈ શક્યો નથી. ફરી પ્રયાસ કરો.",
     rateLimit: "સલાહકાર અત્યારે વ્યસ્ત છે. થોડી વાર પછી ફરી પ્રયાસ કરો.",
     translationError: "વાતચીતનો અનુવાદ થઈ શક્યો નથી. અગાઉની ભાષા પુનઃસ્થાપિત કરી છે.",
@@ -259,6 +285,11 @@ const copy: Record<Language, Translation> = {
     profile: "আপনার পরিকল্পনার প্রোফাইল",
     answers: "{complete}/5টি গুরুত্বপূর্ণ উত্তর",
     type: "একটি বার্তা লিখুন...",
+    voiceButton: "বলুন",
+    voiceStop: "বলা বন্ধ করুন",
+    voiceUnsupported: "এই ব্রাউজারে কথা বলে লেখার সুবিধা নেই।",
+    voicePermission: "মাইক্রোফোন পাওয়া যাচ্ছে না। ব্রাউজারের অনুমতি পরীক্ষা করুন।",
+    voiceListening: "শুনছি...",
     connection: "পরামর্শদাতার সঙ্গে যোগাযোগ করা যায়নি। আবার চেষ্টা করুন।",
     rateLimit: "পরামর্শদাতা এখন ব্যস্ত। কিছুক্ষণ পরে আবার চেষ্টা করুন।",
     translationError: "কথোপকথন অনুবাদ করা যায়নি। আগের ভাষা ফিরিয়ে দেওয়া হয়েছে।",
@@ -908,10 +939,19 @@ export default function VyaparSaathiCityApp() {
   ]);
   const [transcriptCache, setTranscriptCache] = useState<Partial<Record<Language, ChatMessage[]>>>({});
   const [inputText, setInputText] = useState("");
+  const [voiceError, setVoiceError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [languageError, setLanguageError] = useState("");
   const [vyaparState, setVyaparState] = useState<VyaparState>(() => createInitialState("English"));
+  const {
+    transcript,
+    listening,
+    browserSupportsSpeechRecognition,
+    browserSupportsContinuousListening,
+    isMicrophoneAvailable,
+    resetTranscript,
+  } = useSpeechRecognition();
   const [marketData, setMarketData] = useState<CityMarketData | null>(null);
   const [marketLoading, setMarketLoading] = useState(false);
   const [marketError, setMarketError] = useState("");
@@ -1212,6 +1252,8 @@ export default function VyaparSaathiCityApp() {
     : weatherAlert?.advice === "heat"
       ? t.heatAdvice
       : t.normalAdvice;
+  const visibleVoiceError = voiceError ||
+    (browserSupportsSpeechRecognition && !isMicrophoneAvailable ? t.voicePermission : "");
 
   const chooseMode = (mode: Mode) => {
     setVyaparState((previous) => ({
@@ -1227,6 +1269,15 @@ export default function VyaparSaathiCityApp() {
     if (nextLanguage === language) {
       setIsLanguageMenuOpen(false);
       return;
+    }
+    if (listening) {
+      try {
+        await SpeechRecognition.stopListening();
+      } catch {
+        setVoiceError(t.voicePermission);
+      }
+      setInputText([inputText.trim(), transcript.trim()].filter(Boolean).join(" "));
+      resetTranscript();
     }
     const previousLanguage = language;
     setLanguage(nextLanguage);
@@ -1266,12 +1317,21 @@ export default function VyaparSaathiCityApp() {
   };
 
   const sendMessage = async () => {
-    const userMessage = inputText.trim();
+    const userMessage = [inputText.trim(), transcript.trim()].filter(Boolean).join(" ");
     if (!userMessage || isLoading) return;
+    if (listening) {
+      try {
+        await SpeechRecognition.stopListening();
+      } catch {
+        setVoiceError(t.voicePermission);
+      }
+    }
+    resetTranscript();
     const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const updatedMessages = [...messages, { role: "user" as const, text: userMessage, time }];
     setMessages(updatedMessages);
     setInputText("");
+    setVoiceError("");
     setIsLoading(true);
 
     try {
@@ -1296,6 +1356,44 @@ export default function VyaparSaathiCityApp() {
       setMessages([...updatedMessages, { role: "ai", text: message, time }]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const toggleVoiceInput = async () => {
+    setVoiceError("");
+    if (listening) {
+      try {
+        await SpeechRecognition.stopListening();
+      } catch {
+        setVoiceError(t.voicePermission);
+      }
+      return;
+    }
+    if (!browserSupportsSpeechRecognition) {
+      setVoiceError(t.voiceUnsupported);
+      return;
+    }
+    if (!isMicrophoneAvailable) {
+      setVoiceError(t.voicePermission);
+      return;
+    }
+    const currentDraft = [inputText.trim(), transcript.trim()].filter(Boolean).join(" ");
+    setInputText(currentDraft);
+    resetTranscript();
+    const speechLanguage: Record<Language, string> = {
+      English: "en-IN",
+      Hindi: "hi-IN",
+      Marathi: "mr-IN",
+      Gujarati: "gu-IN",
+      Bengali: "bn-IN",
+    };
+    try {
+      await SpeechRecognition.startListening({
+        continuous: browserSupportsContinuousListening,
+        language: speechLanguage[language],
+      });
+    } catch {
+      setVoiceError(t.voicePermission);
     }
   };
 
@@ -1768,22 +1866,37 @@ export default function VyaparSaathiCityApp() {
               <input
                 className="min-w-0 flex-1 rounded-xl border-2 border-outline-variant bg-white px-4 py-3 outline-none focus:border-primary"
                 placeholder={t.type}
-                value={inputText}
-                onChange={(event) => setInputText(event.target.value)}
+                value={[inputText.trim(), transcript.trim()].filter(Boolean).join(" ")}
+                onChange={(event) => {
+                  setInputText(event.target.value);
+                  resetTranscript();
+                }}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") void sendMessage();
                 }}
               />
               <button
                 type="button"
+                onClick={() => void toggleVoiceInput()}
+                disabled={isLoading}
+                aria-label={listening ? t.voiceStop : t.voiceButton}
+                aria-pressed={listening}
+                className={`flex h-12 w-12 items-center justify-center rounded-full shadow-md disabled:opacity-50 ${listening ? "bg-rose-600 text-white" : "border border-outline-variant bg-white text-primary"}`}
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">{listening ? "stop" : "mic"}</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => void sendMessage()}
-                disabled={isLoading || !inputText.trim()}
+                disabled={isLoading || (!inputText.trim() && !transcript.trim())}
                 aria-label={isLoading ? "Waiting for response" : "Send message"}
                 className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-md disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <span className="material-symbols-outlined" aria-hidden="true">send</span>
               </button>
             </div>
+            {listening && <p className="mt-2 text-xs text-primary" role="status">{t.voiceListening}</p>}
+            {visibleVoiceError && <p className="mt-2 text-xs text-rose-700" role="alert">{visibleVoiceError}</p>}
           </div>
           <BottomNav />
         </div>
