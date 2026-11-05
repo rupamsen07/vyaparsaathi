@@ -1,0 +1,38 @@
+{
+  "Bengaluru": {
+    "areas": ["BTM Layout", "Ejipura", "Domlur", "Jakkasandra", "Koramangala"],
+    "map_available": false,
+    "market_samples": [
+      {
+        "area": "BTM Layout",
+        "category": "fast_food",
+        "places_found": 7,
+        "population": 16080,
+        "city_median_places_per_10000": 5.42,
+        "supply_market": "KR Market",
+        "supply_distance_km": 6.8,
+        "confidence": "Sample data"
+      }
+    ],
+    "rush_samples": [
+      {
+        "station": "Indiranagar",
+        "day_type": "weekday",
+        "working_hours": "evening",
+        "hourly_rush_index": {
+          "16": 40,
+          "17": 70,
+          "18": 96,
+          "19": 88
+        },
+        "confidence": "Sample data"
+      }
+    ]
+  },
+  "Pune": {
+    "areas": ["Nagar Road", "Yerawada", "Dhole Patil Road"],
+    "map_available": false,
+    "market_samples": [],
+    "rush_samples": []
+  }
+}

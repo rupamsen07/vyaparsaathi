@@ -1,5 +1,6 @@
 import unittest
 
+from app.core.city_data import load_city_market_data
 from app.core.city_planner import (
     calculate_financial_plan,
     calculate_landed_cost,
@@ -10,6 +11,7 @@ from app.core.city_planner import (
     evaluate_pilot,
     find_best_sales_window,
     label_data_confidence,
+    weather_advice,
 )
 
 
@@ -98,6 +100,11 @@ class CityPlannerTests(unittest.TestCase):
     def test_landed_cost_includes_transport_and_other_charges(self):
         self.assertEqual(calculate_landed_cost(520, 1, 20), 540)
 
+    def test_weather_advice_prioritizes_rain_then_heat(self):
+        self.assertEqual(weather_advice(36, 60), "rain")
+        self.assertEqual(weather_advice(34, 20), "heat")
+        self.assertEqual(weather_advice(22, 20), "normal")
+
     def test_sample_data_overrides_source_count_confidence(self):
         confidence = label_data_confidence(
             population=True,
@@ -108,6 +115,15 @@ class CityPlannerTests(unittest.TestCase):
         )
 
         self.assertEqual(confidence["label"], "Sample data")
+
+    def test_city_market_data_only_presents_explicit_samples(self):
+        bengaluru = load_city_market_data("Bengaluru")
+        pune = load_city_market_data("Pune")
+
+        self.assertEqual(bengaluru["market_samples"][0]["label"], "some gap")
+        self.assertEqual(bengaluru["market_samples"][0]["confidence"], "Sample data")
+        self.assertEqual(pune["market_samples"], [])
+        self.assertEqual(pune["confidence"], "No city data loaded")
 
     def test_invalid_inputs_are_rejected(self):
         with self.assertRaises(ValueError):

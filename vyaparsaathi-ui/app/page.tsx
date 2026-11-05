@@ -14,7 +14,7 @@ const languageOptions = [
 type Language = (typeof languageOptions)[number]["code"];
 type City = "Bengaluru" | "Pune";
 type Mode = "discover" | "launch";
-type Screen = "home" | "advisor" | "market" | "plan";
+type Screen = "home" | "advisor" | "market" | "time" | "plan";
 
 type Translation = {
   greeting: string;
@@ -40,6 +40,27 @@ type Translation = {
   navMarket: string;
   navHome: string;
   back: string;
+  timeTitle: string;
+  bestWindow: string;
+  weatherTitle: string;
+  weatherButton: string;
+  weatherLocation: string;
+  weatherLoading: string;
+  weatherError: string;
+  rainAdvice: string;
+  heatAdvice: string;
+  normalAdvice: string;
+  cityPulse: string;
+  noNews: string;
+  category: string;
+  fastFood: string;
+  placesFound: string;
+  population: string;
+  placesPerTenThousand: string;
+  cityMedian: string;
+  verifyGround: string;
+  mapUnavailable: string;
+  noCategorySample: string;
 };
 
 const copy: Record<Language, Translation> = {
@@ -67,6 +88,27 @@ const copy: Record<Language, Translation> = {
     navMarket: "Market",
     navHome: "Home",
     back: "Back to home",
+    timeTitle: "Rush Clock",
+    bestWindow: "Best 3-hour window",
+    weatherTitle: "Weather Day Planner",
+    weatherButton: "Check weather near me",
+    weatherLocation: "Your location is only used to fetch the local forecast.",
+    weatherLoading: "Loading forecast...",
+    weatherError: "Could not load a forecast. Check location permission and try again.",
+    rainAdvice: "Rain is likely. Choose a covered spot and protect your stock.",
+    heatAdvice: "It may be very hot. Plan shade, water and suitable products.",
+    normalAdvice: "No rain or heat alert in the next few hours.",
+    cityPulse: "City Pulse",
+    noNews: "No verified local headlines are loaded for this city yet.",
+    category: "Business category",
+    fastFood: "Fast food",
+    placesFound: "Similar places found",
+    population: "Residents in sample",
+    placesPerTenThousand: "Places per 10,000 people",
+    cityMedian: "City median",
+    verifyGround: "A gap is a hint, not proof. Verify the spot on the ground.",
+    mapUnavailable: "Ward boundary files are not loaded, so this is a data list rather than a map.",
+    noCategorySample: "No sample count is available for this category and city.",
   },
   Hindi: {
     greeting: "नमस्ते! मैं आपका शहर का व्यापार साथी हूँ। आज आप किस चीज़ की योजना बनाना चाहते हैं?",
@@ -92,6 +134,27 @@ const copy: Record<Language, Translation> = {
     navMarket: "बाज़ार",
     navHome: "होम",
     back: "होम पर वापस",
+    timeTitle: "भीड़ का समय",
+    bestWindow: "सबसे अच्छा 3 घंटे का समय",
+    weatherTitle: "मौसम की योजना",
+    weatherButton: "मेरे पास का मौसम देखें",
+    weatherLocation: "आपकी जगह का उपयोग केवल स्थानीय मौसम जानने के लिए होगा।",
+    weatherLoading: "मौसम का पूर्वानुमान लोड हो रहा है...",
+    weatherError: "पूर्वानुमान नहीं मिला। स्थान की अनुमति जांचकर फिर कोशिश करें।",
+    rainAdvice: "बारिश की संभावना है। ढकी हुई जगह चुनें और सामान सुरक्षित रखें।",
+    heatAdvice: "गर्मी अधिक हो सकती है। छाया, पानी और सही उत्पादों की योजना बनाएं।",
+    normalAdvice: "अगले कुछ घंटों के लिए बारिश या गर्मी की चेतावनी नहीं है।",
+    cityPulse: "शहर की खबरें",
+    noNews: "इस शहर की कोई सत्यापित स्थानीय खबर अभी उपलब्ध नहीं है।",
+    category: "व्यवसाय की श्रेणी",
+    fastFood: "फास्ट फूड",
+    placesFound: "मिले-जुले व्यवसाय",
+    population: "नमूने में निवासी",
+    placesPerTenThousand: "10,000 लोगों पर व्यवसाय",
+    cityMedian: "शहर का मध्य मान",
+    verifyGround: "गैप केवल संकेत है, प्रमाण नहीं। जगह पर जाकर जांचें।",
+    mapUnavailable: "वार्ड की सीमा वाली फाइलें उपलब्ध नहीं हैं, इसलिए यह नक्शे के बजाय डेटा सूची है।",
+    noCategorySample: "इस शहर और श्रेणी के लिए नमूना गिनती उपलब्ध नहीं है।",
   },
   Marathi: {
     greeting: "नमस्कार! मी तुमचा शहरातील व्यवसाय साथी आहे. आज तुम्हाला कशाचे नियोजन करायचे आहे?",
@@ -117,6 +180,27 @@ const copy: Record<Language, Translation> = {
     navMarket: "बाजार",
     navHome: "मुख्यपृष्ठ",
     back: "मुख्यपृष्ठावर परत",
+    timeTitle: "गर्दीची वेळ",
+    bestWindow: "सर्वोत्तम 3 तासांचा कालावधी",
+    weatherTitle: "हवामान नियोजन",
+    weatherButton: "माझ्या जवळचे हवामान पाहा",
+    weatherLocation: "तुमचे स्थान फक्त स्थानिक हवामानाचा अंदाज मिळवण्यासाठी वापरले जाईल.",
+    weatherLoading: "हवामानाचा अंदाज लोड होत आहे...",
+    weatherError: "अंदाज मिळाला नाही. स्थानाची परवानगी तपासून पुन्हा प्रयत्न करा.",
+    rainAdvice: "पावसाची शक्यता आहे. आच्छादित जागा निवडा आणि सामान सुरक्षित ठेवा.",
+    heatAdvice: "खूप उष्णता असू शकते. सावली, पाणी आणि योग्य उत्पादनांचे नियोजन करा.",
+    normalAdvice: "पुढील काही तासांसाठी पाऊस किंवा उष्णतेचा इशारा नाही.",
+    cityPulse: "शहरातील घडामोडी",
+    noNews: "या शहरासाठी सत्यापित स्थानिक बातम्या अजून उपलब्ध नाहीत.",
+    category: "व्यवसायाचा प्रकार",
+    fastFood: "फास्ट फूड",
+    placesFound: "सापडलेली समान दुकाने",
+    population: "नमुन्यातील रहिवासी",
+    placesPerTenThousand: "10,000 लोकांमागे दुकाने",
+    cityMedian: "शहराचा मध्यक",
+    verifyGround: "गॅप हा संकेत आहे, पुरावा नाही. जागेवर जाऊन खात्री करा.",
+    mapUnavailable: "वॉर्ड सीमांच्या फाइल्स उपलब्ध नाहीत, त्यामुळे नकाशाऐवजी डेटा सूची दिसते.",
+    noCategorySample: "या शहरासाठी आणि प्रकारासाठी नमुना मोजणी उपलब्ध नाही.",
   },
   Gujarati: {
     greeting: "નમસ્તે! હું શહેરમાં તમારા વ્યવસાયનો સાથી છું. આજે તમે શું આયોજન કરવા માંગો છો?",
@@ -142,6 +226,27 @@ const copy: Record<Language, Translation> = {
     navMarket: "બજાર",
     navHome: "હોમ",
     back: "હોમ પર પાછા",
+    timeTitle: "ભીડનો સમય",
+    bestWindow: "શ્રેષ્ઠ 3 કલાકનો સમય",
+    weatherTitle: "હવામાન આયોજન",
+    weatherButton: "મારી નજીકનું હવામાન જુઓ",
+    weatherLocation: "તમારા સ્થાનનો ઉપયોગ માત્ર સ્થાનિક હવામાન જાણવા માટે થશે.",
+    weatherLoading: "હવામાન આગાહી લોડ થઈ રહી છે...",
+    weatherError: "આગાહી મળી શકી નથી. સ્થાનની મંજૂરી તપાસીને ફરી પ્રયાસ કરો.",
+    rainAdvice: "વરસાદની શક્યતા છે. ઢંકાયેલી જગ્યા પસંદ કરો અને સામાન સુરક્ષિત રાખો.",
+    heatAdvice: "ખૂબ ગરમી હોઈ શકે છે. છાંયો, પાણી અને યોગ્ય ઉત્પાદનોનું આયોજન કરો.",
+    normalAdvice: "આગામી થોડા કલાકોમાં વરસાદ કે ગરમીની ચેતવણી નથી.",
+    cityPulse: "શહેરની ખબર",
+    noNews: "આ શહેર માટે ચકાસેલી સ્થાનિક ખબર હજી ઉપલબ્ધ નથી.",
+    category: "વ્યવસાયની શ્રેણી",
+    fastFood: "ફાસ્ટ ફૂડ",
+    placesFound: "મળેલી સમાન દુકાનો",
+    population: "નમૂનામાં રહેવાસીઓ",
+    placesPerTenThousand: "10,000 લોકો દીઠ દુકાનો",
+    cityMedian: "શહેરનો મધ્યક",
+    verifyGround: "ગૅપ માત્ર સંકેત છે, પુરાવો નથી. સ્થળે જઈને તપાસો.",
+    mapUnavailable: "વોર્ડની સીમાની ફાઇલો ઉપલબ્ધ નથી, તેથી નકશાને બદલે ડેટાની યાદી છે.",
+    noCategorySample: "આ શહેર અને શ્રેણી માટે નમૂનાની ગણતરી ઉપલબ્ધ નથી.",
   },
   Bengali: {
     greeting: "নমস্কার! আমি শহরের ব্যবসায় আপনার সাথী। আজ আপনি কী পরিকল্পনা করতে চান?",
@@ -167,6 +272,27 @@ const copy: Record<Language, Translation> = {
     navMarket: "বাজার",
     navHome: "হোম",
     back: "হোমে ফিরে যান",
+    timeTitle: "ব্যস্ত সময়",
+    bestWindow: "সেরা ৩ ঘণ্টার সময়",
+    weatherTitle: "আবহাওয়ার পরিকল্পনা",
+    weatherButton: "আমার কাছের আবহাওয়া দেখুন",
+    weatherLocation: "আপনার অবস্থান শুধু স্থানীয় পূর্বাভাস জানার জন্য ব্যবহার হবে।",
+    weatherLoading: "আবহাওয়ার পূর্বাভাস লোড হচ্ছে...",
+    weatherError: "পূর্বাভাস পাওয়া যায়নি। অবস্থানের অনুমতি দেখে আবার চেষ্টা করুন।",
+    rainAdvice: "বৃষ্টির সম্ভাবনা আছে। ছাউনি-ওয়ালা জায়গা বেছে পণ্য সুরক্ষিত রাখুন।",
+    heatAdvice: "খুব গরম হতে পারে। ছায়া, জল এবং উপযুক্ত পণ্যের পরিকল্পনা করুন।",
+    normalAdvice: "আগামী কয়েক ঘণ্টায় বৃষ্টি বা গরমের সতর্কতা নেই।",
+    cityPulse: "শহরের খবর",
+    noNews: "এই শহরের যাচাই করা স্থানীয় খবর এখনও যোগ করা হয়নি।",
+    category: "ব্যবসার ধরন",
+    fastFood: "ফাস্ট ফুড",
+    placesFound: "পাওয়া একই ধরনের দোকান",
+    population: "নমুনার বাসিন্দা",
+    placesPerTenThousand: "প্রতি ১০,০০০ জনে দোকান",
+    cityMedian: "শহরের মধ্যম মান",
+    verifyGround: "গ্যাপ একটি ইঙ্গিত, প্রমাণ নয়। জায়গাটি সরেজমিনে যাচাই করুন।",
+    mapUnavailable: "ওয়ার্ডের সীমানার ফাইল নেই, তাই মানচিত্রের বদলে ডেটার তালিকা দেখানো হচ্ছে।",
+    noCategorySample: "এই শহর ও ব্যবসার ধরনের জন্য নমুনা গণনা নেই।",
   },
 };
 
@@ -217,6 +343,55 @@ type VyaparState = {
 type ChatResponse = {
   updated_state: VyaparState;
   response_text: string;
+};
+
+type MarketSample = {
+  area: string;
+  category: string;
+  places_found: number;
+  population: number;
+  city_median_places_per_10000: number;
+  supply_market: string;
+  supply_distance_km: number;
+  confidence: string;
+  places_per_10000: number;
+  gap_fraction: number;
+  label: string;
+};
+
+type RushSample = {
+  station: string;
+  day_type: string;
+  working_hours: string;
+  hourly_rush_index: Record<string, number>;
+  confidence: string;
+};
+
+type CityMarketData = {
+  city: City;
+  areas: string[];
+  map_available: boolean;
+  market_samples: MarketSample[];
+  rush_samples: RushSample[];
+  confidence: string;
+};
+
+type RushResult = {
+  hourly_index: Record<string, number>;
+  best_start_hour: number;
+  best_end_hour: number;
+  average_rush_index: number;
+};
+
+type WeatherResult = {
+  timezone: string | null;
+  hourly: Array<{
+    time: string;
+    temperature_celsius: number;
+    precipitation_probability: number;
+    advice: "rain" | "heat" | "normal";
+  }>;
+  confidence: string;
 };
 
 const storageKey = "vyaparsaathi-city";
@@ -277,6 +452,15 @@ export default function VyaparSaathiCityApp() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [languageError, setLanguageError] = useState("");
   const [vyaparState, setVyaparState] = useState<VyaparState>(() => createInitialState("English"));
+  const [marketData, setMarketData] = useState<CityMarketData | null>(null);
+  const [marketLoading, setMarketLoading] = useState(false);
+  const [marketError, setMarketError] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("fast_food");
+  const [rushResult, setRushResult] = useState<RushResult | null>(null);
+  const [rushError, setRushError] = useState("");
+  const [weatherResult, setWeatherResult] = useState<WeatherResult | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [weatherError, setWeatherError] = useState("");
   const t = copy[language];
 
   useEffect(() => {
@@ -318,7 +502,7 @@ export default function VyaparSaathiCityApp() {
           },
         });
         if (parsed.messages?.length) setMessages(parsed.messages);
-        if (parsed.activeScreen && ["home", "advisor", "market", "plan"].includes(parsed.activeScreen)) {
+        if (parsed.activeScreen && ["home", "advisor", "market", "time", "plan"].includes(parsed.activeScreen)) {
           setActiveScreen(parsed.activeScreen);
         }
       } catch {
@@ -349,6 +533,47 @@ export default function VyaparSaathiCityApp() {
     }));
   }, [activeScreen, isHydrated, language, messages, vyaparState]);
 
+  useEffect(() => {
+    if (activeScreen !== "market" && activeScreen !== "time") return;
+    let active = true;
+    setMarketLoading(true);
+    setMarketError("");
+    setMarketData(null);
+    setRushResult(null);
+    setRushError("");
+
+    axios.get<CityMarketData>(`${apiBaseUrl}/api/city/market-data`, {
+      params: { city: vyaparState.user_profile.city },
+    }).then((response) => {
+      if (active) setMarketData(response.data);
+    }).catch(() => {
+      if (active) setMarketError(t.connection);
+    }).finally(() => {
+      if (active) setMarketLoading(false);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [activeScreen, t.connection, vyaparState.user_profile.city]);
+
+  useEffect(() => {
+    const sample = marketData?.rush_samples[0];
+    if (activeScreen !== "time" || !sample) return;
+    let active = true;
+    axios.post<RushResult>(`${apiBaseUrl}/api/city/rush-clock`, {
+      hourly_rush_index: sample.hourly_rush_index,
+      working_hours: vyaparState.user_profile.working_hours ?? sample.working_hours,
+    }).then((response) => {
+      if (active) setRushResult(response.data);
+    }).catch(() => {
+      if (active) setRushError(t.noCategorySample);
+    });
+    return () => {
+      active = false;
+    };
+  }, [activeScreen, marketData, t.noCategorySample, vyaparState.user_profile.working_hours]);
+
   const progress = useMemo(() => {
     const { user_profile: profile, business_context: business } = vyaparState;
     const filled = [
@@ -360,6 +585,17 @@ export default function VyaparSaathiCityApp() {
     ].filter(Boolean).length;
     return { filled, percent: filled * 20 };
   }, [vyaparState]);
+  const selectedMarketSample = marketData?.market_samples.find(
+    (sample) => sample.category === selectedCategory,
+  );
+  const rushSample = marketData?.rush_samples[0];
+  const upcomingWeather = weatherResult?.hourly.slice(new Date().getHours(), new Date().getHours() + 6) ?? [];
+  const weatherAlert = upcomingWeather.find((forecast) => forecast.advice !== "normal");
+  const weatherAdviceText = weatherAlert?.advice === "rain"
+    ? t.rainAdvice
+    : weatherAlert?.advice === "heat"
+      ? t.heatAdvice
+      : t.normalAdvice;
 
   const chooseMode = (mode: Mode) => {
     setVyaparState((previous) => ({
@@ -447,6 +683,35 @@ export default function VyaparSaathiCityApp() {
     }
   };
 
+  const requestWeather = () => {
+    setWeatherError("");
+    setWeatherResult(null);
+    if (!navigator.geolocation) {
+      setWeatherError(t.weatherError);
+      return;
+    }
+    setWeatherLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const response = await axios.get<WeatherResult>(`${apiBaseUrl}/api/city/weather`, {
+            params: { latitude: coords.latitude, longitude: coords.longitude },
+          });
+          setWeatherResult(response.data);
+        } catch {
+          setWeatherError(t.weatherError);
+        } finally {
+          setWeatherLoading(false);
+        }
+      },
+      () => {
+        setWeatherError(t.weatherError);
+        setWeatherLoading(false);
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 3600000 },
+    );
+  };
+
   const TopAppBar = ({ title = "VyaparSaathi City" }: { title?: string }) => (
     <header className="fixed top-0 left-0 right-0 z-50 mx-auto flex h-16 max-w-md items-center justify-between border-b border-outline-variant bg-surface px-4">
       <div className="flex items-center gap-3">
@@ -485,6 +750,7 @@ export default function VyaparSaathiCityApp() {
         ["home", "home", t.navHome],
         ["advisor", "forum", t.navChat],
         ["market", "map", t.navMarket],
+        ["time", "schedule", t.timeTitle],
         ["plan", "assignment", t.navPlan],
       ] as const).map(([screen, icon, label]) => (
         <button
@@ -611,11 +877,137 @@ export default function VyaparSaathiCityApp() {
       {activeScreen === "market" && (
         <div className="min-h-screen px-5 pb-28 pt-24">
           <TopAppBar title={t.marketTitle} />
-          <div className="mt-8 rounded-2xl border border-outline-variant/50 bg-white p-5 shadow-sm">
-            <span className="material-symbols-outlined mb-3 text-4xl text-primary" aria-hidden="true">location_city</span>
-            <h1 className="text-xl font-bold">{t.marketTitle}</h1>
-            <p className="mt-3 text-sm leading-relaxed text-outline">{t.marketMessage}</p>
-          </div>
+          <h1 className="text-2xl font-bold">{t.marketTitle} · {vyaparState.user_profile.city}</h1>
+          <p className="mt-2 text-sm text-outline">{t.marketMessage}</p>
+          <label htmlFor="market-category" className="mb-2 mt-5 block text-sm font-bold">{t.category}</label>
+          <select
+            id="market-category"
+            value={selectedCategory}
+            onChange={(event) => setSelectedCategory(event.target.value)}
+            className="w-full rounded-xl border border-outline-variant bg-white px-4 py-3"
+          >
+            <option value="fast_food">{t.fastFood}</option>
+            <option value="chai">Chai</option>
+            <option value="pharmacy">Pharmacy</option>
+            <option value="tailor">Tailor</option>
+            <option value="phone_repair">Phone repair</option>
+          </select>
+
+          {marketLoading && <p className="mt-4 text-sm text-outline" role="status">{t.weatherLoading}</p>}
+          {marketError && <p className="mt-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-800" role="alert">{marketError}</p>}
+          {selectedMarketSample && (
+            <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-bold">{selectedMarketSample.area}</h2>
+                  <p className="mt-1 text-xs text-outline">{selectedMarketSample.confidence}</p>
+                </div>
+                <span className="rounded-full bg-violet-100 px-2.5 py-1 text-[11px] font-bold text-violet-800">{selectedMarketSample.label}</span>
+              </div>
+              <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-outline">{t.placesFound}</dt>
+                  <dd className="mt-1 font-bold">{selectedMarketSample.places_found}</dd>
+                </div>
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-outline">{t.population}</dt>
+                  <dd className="mt-1 font-bold">{selectedMarketSample.population.toLocaleString()}</dd>
+                </div>
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-outline">{t.placesPerTenThousand}</dt>
+                  <dd className="mt-1 font-bold">{selectedMarketSample.places_per_10000}</dd>
+                </div>
+                <div className="rounded-xl bg-surface-container-low p-3">
+                  <dt className="text-xs text-outline">{t.cityMedian}</dt>
+                  <dd className="mt-1 font-bold">{selectedMarketSample.city_median_places_per_10000}</dd>
+                </div>
+              </dl>
+              <p className="mt-4 text-sm text-outline">{t.verifyGround}</p>
+            </section>
+          )}
+          {marketData && !selectedMarketSample && (
+            <p className="mt-4 rounded-xl bg-surface-container-low p-4 text-sm text-outline">{t.noCategorySample}</p>
+          )}
+          {marketData && (
+            <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4">
+              <h2 className="font-bold">{t.chooseCity}: {marketData.city}</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {marketData.areas.map((area) => (
+                  <span key={area} className="rounded-full bg-surface-container-low px-3 py-1.5 text-xs">{area}</span>
+                ))}
+              </div>
+              {!marketData.map_available && <p className="mt-3 text-xs text-outline">{t.mapUnavailable}</p>}
+            </section>
+          )}
+          <p className="mt-4 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">{t.sampleNotice}</p>
+          <BottomNav />
+        </div>
+      )}
+
+      {activeScreen === "time" && (
+        <div className="min-h-screen px-5 pb-28 pt-24">
+          <TopAppBar title={t.timeTitle} />
+          <h1 className="text-2xl font-bold">{t.timeTitle}</h1>
+          {marketLoading && <p className="mt-4 text-sm text-outline" role="status">{t.weatherLoading}</p>}
+          {marketError && <p className="mt-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-800" role="alert">{marketError}</p>}
+          {rushSample && (
+            <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+              <div className="flex justify-between gap-3">
+                <div>
+                  <h2 className="font-bold">{rushSample.station}</h2>
+                  <p className="text-xs text-outline">{rushSample.day_type} · {rushSample.confidence}</p>
+                </div>
+                <span className="rounded-full bg-violet-100 px-2.5 py-1 text-[11px] font-bold text-violet-800">{rushSample.confidence}</span>
+              </div>
+              <div className="mt-5 flex h-28 items-end gap-3">
+                {Object.entries(rushSample.hourly_rush_index).map(([hour, value]) => (
+                  <div key={hour} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
+                    <div className="w-full rounded-t-lg bg-primary-container" style={{ height: `${Math.max(value, 6)}%` }} aria-label={`${hour}:00 ${value}`} />
+                    <span className="text-[10px] text-outline">{hour}:00</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 rounded-xl bg-primary/5 p-3">
+                <p className="text-xs text-outline">{t.bestWindow}</p>
+                {rushResult ? (
+                  <p className="mt-1 font-bold">{String(rushResult.best_start_hour).padStart(2, "0")}:00–{String(rushResult.best_end_hour).padStart(2, "0")}:00 · {rushResult.average_rush_index}/100</p>
+                ) : (
+                  <p className="mt-1 text-sm text-outline">{rushError || t.noCategorySample}</p>
+                )}
+              </div>
+            </section>
+          )}
+          {marketData && !rushSample && <p className="mt-4 rounded-xl bg-surface-container-low p-4 text-sm text-outline">{t.noCategorySample}</p>}
+
+          <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary" aria-hidden="true">partly_cloudy_day</span>
+              <h2 className="font-bold">{t.weatherTitle}</h2>
+            </div>
+            <p className="mt-2 text-xs text-outline">{t.weatherLocation}</p>
+            <button type="button" onClick={requestWeather} disabled={weatherLoading} className="mt-3 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">
+              {weatherLoading ? t.weatherLoading : t.weatherButton}
+            </button>
+            {weatherError && <p className="mt-3 text-sm text-rose-700" role="alert">{weatherError}</p>}
+            {weatherResult && (
+              <>
+                <p className="mt-3 rounded-xl bg-surface-container-low p-3 text-sm">{weatherAdviceText}</p>
+                <ul className="mt-3 grid grid-cols-3 gap-2">
+                  {upcomingWeather.slice(0, 3).map((forecast) => (
+                    <li key={forecast.time} className="rounded-xl bg-surface-container-low p-2 text-center text-xs">
+                      <span className="block font-bold">{forecast.time.slice(11, 16)}</span>
+                      <span>{Math.round(forecast.temperature_celsius)}° · {forecast.precipitation_probability}%</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
+
+          <section className="mt-4 rounded-2xl border border-outline-variant/50 bg-white p-4">
+            <h2 className="font-bold">{t.cityPulse}</h2>
+            <p className="mt-2 text-sm text-outline">{t.noNews}</p>
+          </section>
           <p className="mt-4 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">{t.sampleNotice}</p>
           <BottomNav />
         </div>

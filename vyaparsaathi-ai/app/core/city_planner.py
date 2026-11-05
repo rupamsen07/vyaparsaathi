@@ -238,6 +238,20 @@ def estimate_daily_sales(
     }
 
 
+def weather_advice(temperature_celsius: float, precipitation_probability: float) -> str:
+    temperature = float(temperature_celsius)
+    if not math.isfinite(temperature):
+        raise ValueError("temperature_celsius must be finite")
+    rain_probability = _nonnegative(precipitation_probability, "precipitation_probability")
+    if rain_probability > 100:
+        raise ValueError("precipitation_probability must be between 0 and 100")
+    if rain_probability >= 60:
+        return "rain"
+    if temperature >= 34:
+        return "heat"
+    return "normal"
+
+
 def evaluate_pilot(sales_by_day: Sequence[float], forecast_units_per_day: float) -> dict[str, float | str]:
     if not sales_by_day:
         raise ValueError("At least one pilot day is required")
